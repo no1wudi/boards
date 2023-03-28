@@ -22,6 +22,8 @@ include $(TOPDIR)/Make.defs
 
 CSRCS = esp32_boot.c esp32_bringup.c
 
+RCSRCS = etc/init.d/rcS etc/init.d/rc.sysinit
+
 ifeq ($(CONFIG_BOARDCTL),y)
 CSRCS += esp32_appinit.c
 ifeq ($(CONFIG_BOARDCTL_RESET),y)

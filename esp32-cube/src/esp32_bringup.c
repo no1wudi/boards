@@ -44,7 +44,10 @@
 #include <nuttx/fs/fs.h>
 #include <nuttx/himem/himem.h>
 #include <nuttx/board.h>
+#include <nuttx/sensors/mpu60x0.h>
+#include <nuttx/sensors/bh1750fvi.h>
 #include <nuttx/lcd/lcd_dev.h>
+#include <nuttx/i2c/i2c_master.h>
 
 #if defined(CONFIG_ESP32_EFUSE)
 #include "esp32_efuse.h"
@@ -151,7 +154,9 @@
 #  include "esp32_max6675.h"
 #endif
 
+#include "esp32-devkitc.h"
 #include "esp32_gpio.h"
+#include "esp32_i2c.h"
 
 /****************************************************************************
  * Public Functions
@@ -174,6 +179,7 @@
 int esp32_bringup(void)
 {
   int ret;
+  struct mpu_config_s mpu;
 
 #ifdef CONFIG_ESP32_AES_ACCELERATOR
   ret = esp32_aes_init();
@@ -233,11 +239,18 @@ int esp32_bringup(void)
     }
 #endif
 
+  mpu.i2c = esp32_i2cbus_initialize(0);
+  mpu.addr = 0x68;
+
   board_lcd_initialize();
 
   lcddev_register(0);
 
   esp32_gpiowrite(DISPLAY_BCKL, false);
+
+  mpu60x0_register("/dev/imu", &mpu);
+
+  bh1750fvi_register("/dev/amb", mpu.i2c, 0x23);
 
   UNUSED(ret);
   return OK;
