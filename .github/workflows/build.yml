@@ -5,6 +5,12 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        board_config: [
+          ../boards/esp32-cube/configs/nsh,
+          ../boards/esp32s3-tiny/configs/nsh
+        ]
     steps:
       - name: Checkout NuttX
         uses: actions/checkout@v3
@@ -30,5 +36,11 @@ jobs:
           mkdir -p tools
           curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
           curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
-          ls tools
-          ls
+          echo "PATH=$PWD/tools/xtensa-esp32-elf/bin:$PWD/tools/xtensa-esp32-elf/bin:$PATH" >> $GITHUB_ENV
+          echo "PATH=$PWD/tools/xtensa-esp32s3-elf/bin:$PWD/tools/xtensa-esp32s3-elf/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Build
+        run: |
+          cd nuttx
+          tools/configure.sh ${{ matrix.board_config }}
+          make -j$(nproc)
