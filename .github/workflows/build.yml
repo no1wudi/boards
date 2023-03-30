@@ -36,8 +36,8 @@ jobs:
           mkdir -p tools
           curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
           curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
-          echo "$GITHUB_WORKSPACE/tools/xtensa-esp32-elf/bin" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/tools/xtensa-esp32s3-elf/bin" >> $GITHUB_ENV
+          echo "$PWD/tools/xtensa-esp32-elf/bin" >> $GITHUB_ENV
+          echo "$PWD/tools/xtensa-esp32s3-elf/bin" >> $GITHUB_ENV
 
       - name: Build
         run: |
