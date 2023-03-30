@@ -1,6 +1,13 @@
 
-# Build on each commit
-on: [push, pull_request]
+# Build on each commit and daily
+
+on:
+  push:
+  schedule:
+    - cron:  '0 0 * * *'
+
+  workflow_dispatch:
+
 
 jobs:
   build:
