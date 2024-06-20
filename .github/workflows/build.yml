@@ -20,13 +20,15 @@ jobs:
       - name: Checkout NuttX
         uses: actions/checkout@v4
         with:
-          repository: apache/incubator-nuttx
+          repository: apache/nuttx
+          ref: master
           path: nuttx
 
       - name: Checkout NuttX Apps
         uses: actions/checkout@v4
         with:
-          repository: apache/incubator-nuttx-apps
+          repository: apache/nuttx-apps
+          ref: master
           path: apps
 
       - name: Checkout Boards
