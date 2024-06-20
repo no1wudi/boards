@@ -18,19 +18,19 @@ jobs:
         ]
     steps:
       - name: Checkout NuttX
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: apache/incubator-nuttx
           path: nuttx
 
       - name: Checkout NuttX Apps
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: apache/incubator-nuttx-apps
           path: apps
 
       - name: Checkout Boards
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: boards
 
