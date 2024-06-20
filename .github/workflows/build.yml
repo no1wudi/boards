@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         board_config: [
@@ -45,10 +45,8 @@ jobs:
           pip3 install esptool
 
           mkdir -p tools
-          curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
-          curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
-          echo "$PWD/tools/xtensa-esp32-elf/bin" >> $GITHUB_PATH
-          echo "$PWD/tools/xtensa-esp32s3-elf/bin" >> $GITHUB_PATH
+          curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-13.2.0_20230928/xtensa-esp-elf-13.2.0_20230928-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
+          echo "$PWD/tools/xtensa-esp-elf/bin" >> $GITHUB_PATH
 
       - name: Build
         run: |
