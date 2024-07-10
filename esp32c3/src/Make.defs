@@ -20,6 +20,8 @@
 
 include $(TOPDIR)/Make.defs
 
+RCSRCS = etc/init.d/rc.sysinit etc/init.d/rcS
+
 CSRCS = esp32c3_boot.c esp32c3_bringup.c
 
 ifeq ($(CONFIG_BOARDCTL),y)
