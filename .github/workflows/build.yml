@@ -46,9 +46,11 @@ jobs:
           pip3 install esptool
 
           mkdir -p tools
-          curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-13.2.0_20230928/xtensa-esp-elf-13.2.0_20230928-x86_64-linux-gnu.tar.xz | tar -xJ -C tools
+          wget https://github.com/espressif/crosstool-NG/releases/download/esp-13.2.0_20230928/xtensa-esp-elf-13.2.0_20230928-x86_64-linux-gnu.tar.xz
+          tar -xJ -C tools xtensa-esp-elf-13.2.0_20230928-x86_64-linux-gnu.tar.xz
           echo "$PWD/tools/xtensa-esp-elf/bin" >> $GITHUB_PATH
-          curl -L https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v13.2.0-2/xpack-riscv-none-elf-gcc-13.2.0-2-linux-x64.tar.gz | tar -xvf -C tools
+          wget https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v13.2.0-2/xpack-riscv-none-elf-gcc-13.2.0-2-linux-x64.tar.gz
+          tar -xvf -C tools xpack-riscv-none-elf-gcc-13.2.0-2-linux-x64.tar.gz
           echo "$PWD/tools/xpack-riscv-none-elf-gcc-13.2.0-2/bin" >> $GITHUB_PATH
 
       - name: Build
