@@ -1,5 +1,5 @@
 ############################################################################
-# boards/xtensa/esp32/esp32-devkitc/src/Make.defs
+# boards/esp32/src/Make.defs
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -62,4 +62,3 @@ endif
 DEPPATH += --dep-path board
 VPATH += :board
 CFLAGS += $(shell $(INCDIR) "$(CC)" $(TOPDIR)$(DELIM)arch$(DELIM)$(CONFIG_ARCH)$(DELIM)src$(DELIM)board$(DELIM)board)
-
