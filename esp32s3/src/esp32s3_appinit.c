@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <nuttx/board.h>
 
+#include "board.h"
+
 #ifdef CONFIG_BOARDCTL
 
 /****************************************************************************
