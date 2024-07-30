@@ -15,7 +15,8 @@ jobs:
         board_config: [
           ../boards/esp32/configs/nsh,
           ../boards/esp32c3/configs/nsh,
-          ../boards/esp32s3/configs/nsh,
+          ../boards/esp32s3/configs/usbnsh,
+          ../boards/esp32s3/configs/watch,
         ]
     steps:
       - name: Checkout NuttX
