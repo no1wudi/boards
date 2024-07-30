@@ -38,6 +38,8 @@
 #include <errno.h>
 #include <nuttx/fs/fs.h>
 
+#include "esp32s3_gpio.h"
+
 #ifdef CONFIG_ESP32S3_TIMER
 #  include "esp32s3_board_tim.h"
 #endif
@@ -75,6 +77,11 @@
 int esp32s3_bringup(void)
 {
   int ret;
+
+#ifdef CONFIG_BOARD_ESP32S3_BUZZER
+  esp32s3_configgpio(CONFIG_BOARD_ESP32S3_BUZZER_PIN, OUTPUT | PULLDOWN);
+  esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_BUZZER_PIN, false);
+#endif
 
 #ifdef CONFIG_FS_PROCFS
   /* Mount the procfs file system */
