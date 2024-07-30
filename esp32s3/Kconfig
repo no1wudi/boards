@@ -13,3 +13,19 @@ config BOARD_ESP32S3_BUZZER_PIN
     default 33
 
 endif # BOARD_ESP32S3_BUZZER
+
+if LCD_ST7789
+
+config BOARD_ESP32S3_LCD_ST7789_DC_PIN
+    int "LCD ST7789 DC pin"
+    default 4
+
+config BOARD_ESP32S3_LCD_ST7789_RST_PIN
+    int "LCD ST7789 RST pin"
+    default 8
+
+config BOARD_ESP32S3_LCD_ST7789_BL_PIN
+    int "LCD ST7789 Backlight pin"
+    default 15
+
+endif # LCD_ST7789

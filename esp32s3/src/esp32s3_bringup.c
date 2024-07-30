@@ -37,23 +37,24 @@
 
 #include <errno.h>
 #include <nuttx/fs/fs.h>
+#include <nuttx/video/fb.h>
 
 #include "esp32s3_gpio.h"
 
 #ifdef CONFIG_ESP32S3_TIMER
-#  include "esp32s3_board_tim.h"
+#include "esp32s3_board_tim.h"
 #endif
 
 #ifdef CONFIG_ESP32S3_RT_TIMER
-#  include "esp32s3_rt_timer.h"
+#include "esp32s3_rt_timer.h"
 #endif
 
 #ifdef CONFIG_WATCHDOG
-#  include "esp32s3_board_wdt.h"
+#include "esp32s3_board_wdt.h"
 #endif
 
 #ifdef CONFIG_INPUT_BUTTONS
-#  include <nuttx/input/buttons.h>
+#include <nuttx/input/buttons.h>
 #endif
 
 /****************************************************************************
@@ -150,10 +151,9 @@ int esp32s3_bringup(void)
     }
 #endif
 
-  /* If we got here then perhaps not all initialization was successful, but
-   * at least enough succeeded to bring-up NSH with perhaps reduced
-   * capabilities.
-   */
+#if defined(CONFIG_VIDEO_FB)
+  fb_register(0, 0);
+#endif
 
   UNUSED(ret);
   return OK;
