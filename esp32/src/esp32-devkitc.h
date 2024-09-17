@@ -37,22 +37,22 @@
 
 /* BOOT Button */
 
-#define BUTTON_BOOT  0
+#define BUTTON_BOOT 0
 
 /* LED
  *
  * This is an externally connected LED used for testing.
  */
 
-#define GPIO_LED1             2
+#define GPIO_LED1 2
 
 /* PCNT Quadrature Encoder IDs */
 
-#define PCNT_QE0_ID           0
+#define PCNT_QE0_ID 0
 
 /* MCP2515 Interrupt pin */
 
-#define GPIO_MCP2515_IRQ      22
+#define GPIO_MCP2515_IRQ 22
 
 /* TIMERS */
 

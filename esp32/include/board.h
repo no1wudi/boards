@@ -30,36 +30,36 @@
 /* The ESP32 Devkit board is fitted with either a 26 a 40MHz crystal */
 
 #ifdef CONFIG_ESP32_XTAL_26MHz
-#  define BOARD_XTAL_FREQUENCY  26000000
+#define BOARD_XTAL_FREQUENCY 26000000
 #else
-#  define BOARD_XTAL_FREQUENCY  40000000
+#define BOARD_XTAL_FREQUENCY 40000000
 #endif
 
 #ifdef CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ
-#  define BOARD_CLOCK_FREQUENCY (CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ * 1000000)
+#define BOARD_CLOCK_FREQUENCY (CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ * 1000000)
 #else
-#  define BOARD_CLOCK_FREQUENCY 80000000
+#define BOARD_CLOCK_FREQUENCY 80000000
 #endif
 
 /* GPIO definitions *********************************************************/
 
 /* Display */
 
-#define DISPLAY_SPI       2
-#define DISPLAY_DC        2
-#define DISPLAY_RST       4
-#define DISPLAY_BCKL      5
+#define DISPLAY_SPI  2
+#define DISPLAY_DC   2
+#define DISPLAY_RST  4
+#define DISPLAY_BCKL 5
 
 /* LED definitions **********************************************************/
 
 /* Define how many LEDs this board has (needed by userleds) */
 
-#define BOARD_NLEDS       1
+#define BOARD_NLEDS 1
 
 /* GPIO pins used by the GPIO Subsystem */
 
-#define BOARD_NGPIOOUT    1 /* Amount of GPIO Output pins */
-#define BOARD_NGPIOIN     1 /* Amount of GPIO Input without Interruption */
-#define BOARD_NGPIOINT    1 /* Amount of GPIO Input w/ Interruption pins */
+#define BOARD_NGPIOOUT 1 /* Amount of GPIO Output pins */
+#define BOARD_NGPIOIN  1 /* Amount of GPIO Input without Interruption */
+#define BOARD_NGPIOINT 1 /* Amount of GPIO Input w/ Interruption pins */
 
 #endif /* __BOARDS_XTENSA_ESP32_ESP32_DEVKITC_INCLUDE_BOARD_H */

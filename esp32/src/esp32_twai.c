@@ -61,7 +61,7 @@ int esp32_twai_setup(void)
 {
 #ifdef CONFIG_ESP32_TWAI0
   struct can_dev_s *twai;
-  int ret;
+  int               ret;
 
   /* Call esp32_twaiinitialize() to get an instance of the TWAI0
    * interface
@@ -69,19 +69,19 @@ int esp32_twai_setup(void)
 
   twai = esp32_twaiinitialize(TWAI_PORT0);
   if (twai == NULL)
-    {
-      canerr("ERROR:  Failed to get TWAI0 interface\n");
-      return -ENODEV;
-    }
+  {
+    canerr("ERROR:  Failed to get TWAI0 interface\n");
+    return -ENODEV;
+  }
 
   /* Register the TWAI0 driver at "/dev/can0" */
 
   ret = can_register("/dev/can0", twai);
   if (ret < 0)
-    {
-      canerr("ERROR: TWAI1 register failed: %d\n", ret);
-      return ret;
-    }
+  {
+    canerr("ERROR: TWAI1 register failed: %d\n", ret);
+    return ret;
+  }
 
   return OK;
 #else

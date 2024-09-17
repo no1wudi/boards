@@ -89,9 +89,9 @@ int esp32s3_bringup(void)
 
   ret = nx_mount(NULL, "/proc", "procfs", 0, NULL);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to mount procfs at /proc: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to mount procfs at /proc: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_FS_TMPFS
@@ -99,10 +99,10 @@ int esp32s3_bringup(void)
 
   ret = nx_mount(NULL, CONFIG_LIBC_TMPDIR, "tmpfs", 0, NULL);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to mount tmpfs at %s: %d\n",
-             CONFIG_LIBC_TMPDIR, ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to mount tmpfs at %s: %d\n",
+           CONFIG_LIBC_TMPDIR, ret);
+  }
 #endif
 
 #ifdef CONFIG_ESP32S3_TIMER
@@ -110,17 +110,17 @@ int esp32s3_bringup(void)
 
   ret = board_tim_init();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize timers: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize timers: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESP32S3_RT_TIMER
   ret = esp32s3_rt_timer_init();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_WATCHDOG
@@ -128,9 +128,9 @@ int esp32s3_bringup(void)
 
   ret = board_wdt_init();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize watchdog timer: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize watchdog timer: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_INPUT_BUTTONS
@@ -138,17 +138,17 @@ int esp32s3_bringup(void)
 
   ret = btn_lower_initialize("/dev/buttons");
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize button driver: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize button driver: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESP32S3_SPIFLASH
   ret = board_spiflash_init();
   if (ret)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
+  }
 #endif
 
 #if defined(CONFIG_VIDEO_FB)

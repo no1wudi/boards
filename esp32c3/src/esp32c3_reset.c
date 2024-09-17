@@ -64,14 +64,14 @@ int board_reset(int status)
   syslog(LOG_INFO, "reboot status=%d\n", status);
 
   switch (status)
-    {
-      case EXIT_SUCCESS:
-        up_shutdown_handler();
-        break;
-      case CONFIG_BOARD_ASSERT_RESET_VALUE:
-      default:
-        break;
-    }
+  {
+  case EXIT_SUCCESS:
+    up_shutdown_handler();
+    break;
+  case CONFIG_BOARD_ASSERT_RESET_VALUE:
+  default:
+    break;
+  }
 
   up_systemreset();
 

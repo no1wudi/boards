@@ -29,18 +29,18 @@
 
 /* The ESP32-S3-EYE board is fitted with a 40MHz crystal */
 
-#define BOARD_XTAL_FREQUENCY    40000000
+#define BOARD_XTAL_FREQUENCY 40000000
 
 #ifdef CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ
-#  define BOARD_CLOCK_FREQUENCY (CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ * 1000000)
+#define BOARD_CLOCK_FREQUENCY (CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ * 1000000)
 #else
-#  define BOARD_CLOCK_FREQUENCY 80000000
+#define BOARD_CLOCK_FREQUENCY 80000000
 #endif
 
 /* LED definitions **********************************************************/
 
 /* Define how many LEDs this board has (needed by userleds) */
 
-#define BOARD_NLEDS             1
+#define BOARD_NLEDS 1
 
 #endif /* __BOARDS_XTENSA_ESP32S3_ESP32S3_EYE_INCLUDE_BOARD_H */

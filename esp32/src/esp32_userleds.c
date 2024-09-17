@@ -40,9 +40,8 @@
 
 /* This array maps an LED number to GPIO pin configuration */
 
-static const uint32_t g_ledcfg[BOARD_NLEDS] =
-{
-  GPIO_LED1,
+static const uint32_t g_ledcfg[BOARD_NLEDS] = {
+    GPIO_LED1,
 };
 
 /****************************************************************************
@@ -58,9 +57,9 @@ uint32_t board_userled_initialize(void)
   uint8_t i;
 
   for (i = 0; i < BOARD_NLEDS; i++)
-    {
-      esp32_configgpio(g_ledcfg[i], OUTPUT);
-    }
+  {
+    esp32_configgpio(g_ledcfg[i], OUTPUT);
+  }
 
   return BOARD_NLEDS;
 }
@@ -72,9 +71,9 @@ uint32_t board_userled_initialize(void)
 void board_userled(int led, bool ledon)
 {
   if ((unsigned)led < BOARD_NLEDS)
-    {
-      esp32_gpiowrite(g_ledcfg[led], ledon);
-    }
+  {
+    esp32_gpiowrite(g_ledcfg[led], ledon);
+  }
 }
 
 /****************************************************************************
@@ -88,8 +87,7 @@ void board_userled_all(uint32_t ledset)
   /* Configure LED1-8 GPIOs for output */
 
   for (i = 0; i < BOARD_NLEDS; i++)
-    {
-      esp32_gpiowrite(g_ledcfg[i], (ledset & (1 << i)) != 0);
-    }
+  {
+    esp32_gpiowrite(g_ledcfg[i], (ledset & (1 << i)) != 0);
+  }
 }
-

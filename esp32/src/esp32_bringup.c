@@ -55,11 +55,11 @@
 #include "esp32_partition.h"
 
 #ifdef CONFIG_USERLED
-#  include <nuttx/leds/userled.h>
+#include <nuttx/leds/userled.h>
 #endif
 
 #ifdef CONFIG_CAN_MCP2515
-#  include "esp32_mcp2515.h"
+#include "esp32_mcp2515.h"
 #endif
 
 #ifdef CONFIG_TIMER
@@ -67,91 +67,91 @@
 #endif
 
 #ifdef CONFIG_ONESHOT
-#  include "esp32_board_oneshot.h"
+#include "esp32_board_oneshot.h"
 #endif
 
 #ifdef CONFIG_WATCHDOG
-#  include "esp32_board_wdt.h"
+#include "esp32_board_wdt.h"
 #endif
 
 #ifdef CONFIG_ESP32_SPIFLASH
-#  include "esp32_board_spiflash.h"
+#include "esp32_board_spiflash.h"
 #endif
 
 #ifdef CONFIG_ESP32_BLE
-#  include "esp32_ble.h"
+#include "esp32_ble.h"
 #endif
 
 #ifdef CONFIG_ESP32_WIFI
-#  include "esp32_board_wlan.h"
+#include "esp32_board_wlan.h"
 #endif
 
 #ifdef CONFIG_ESP32_WIFI_BT_COEXIST
-#  include "esp32_wifi_adapter.h"
+#include "esp32_wifi_adapter.h"
 #endif
 
 #ifdef CONFIG_ESP32_I2C
-#  include "esp32_board_i2c.h"
+#include "esp32_board_i2c.h"
 #endif
 
 #ifdef CONFIG_ESP32_I2S
-#  include "esp32_i2s.h"
+#include "esp32_i2s.h"
 #endif
 
 #ifdef CONFIG_ESP32_PCNT_AS_QE
-#  include "board_qencoder.h"
+#include "board_qencoder.h"
 #endif
 
 #ifdef CONFIG_I2CMULTIPLEXER_TCA9548A
-#  include "esp32_tca9548a.h"
+#include "esp32_tca9548a.h"
 #endif
 
 #ifdef CONFIG_SENSORS_BMP180
-#  include "esp32_bmp180.h"
+#include "esp32_bmp180.h"
 #endif
 
 #ifdef CONFIG_SENSORS_BMP280
-#  include "esp32_bmp280.h"
+#include "esp32_bmp280.h"
 #endif
 
 #ifdef CONFIG_SENSORS_SHT3X
-#  include "esp32_sht3x.h"
+#include "esp32_sht3x.h"
 #endif
 
 #ifdef CONFIG_SENSORS_MS5611
-#  include "esp32_ms5611.h"
+#include "esp32_ms5611.h"
 #endif
 
 #ifdef CONFIG_LCD_HT16K33
-#  include "esp32_ht16k33.h"
+#include "esp32_ht16k33.h"
 #endif
 
 #ifdef CONFIG_ESP32_AES_ACCELERATOR
-#  include "esp32_aes.h"
+#include "esp32_aes.h"
 #endif
 
 #ifdef CONFIG_ESP32_RT_TIMER
-#  include "esp32_rt_timer.h"
+#include "esp32_rt_timer.h"
 #endif
 
 #ifdef CONFIG_INPUT_BUTTONS
-#  include <nuttx/input/buttons.h>
+#include <nuttx/input/buttons.h>
 #endif
 
 #ifdef CONFIG_RTC_DRIVER
-#  include "esp32_rtc_lowerhalf.h"
+#include "esp32_rtc_lowerhalf.h"
 #endif
 
 #ifdef CONFIG_SPI_DRIVER
-#  include "esp32_spi.h"
+#include "esp32_spi.h"
 #endif
 
 #ifdef CONFIG_LCD_BACKPACK
-#  include "esp32_lcd_backpack.h"
+#include "esp32_lcd_backpack.h"
 #endif
 
 #ifdef CONFIG_SENSORS_MAX6675
-#  include "esp32_max6675.h"
+#include "esp32_max6675.h"
 #endif
 
 #include "esp32-devkitc.h"
@@ -178,16 +178,15 @@
 
 int esp32_bringup(void)
 {
-  int ret;
+  int                 ret;
   struct mpu_config_s mpu;
 
 #ifdef CONFIG_ESP32_AES_ACCELERATOR
   ret = esp32_aes_init();
   if (ret < 0)
-    {
-      syslog(LOG_ERR,
-             "ERROR: Failed to initialize AES: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to initialize AES: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_FS_PROCFS
@@ -195,37 +194,36 @@ int esp32_bringup(void)
 
   ret = nx_mount(NULL, "/proc", "procfs", 0, NULL);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to mount procfs at /proc: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to mount procfs at /proc: %d\n", ret);
+  }
 #endif
-
 
 #ifdef CONFIG_FS_TMPFS
   /* Mount the tmpfs file system */
 
   ret = nx_mount(NULL, CONFIG_LIBC_TMPDIR, "tmpfs", 0, NULL);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to mount tmpfs at %s: %d\n",
-             CONFIG_LIBC_TMPDIR, ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to mount tmpfs at %s: %d\n",
+           CONFIG_LIBC_TMPDIR, ret);
+  }
 #endif
 
 #ifdef CONFIG_MMCSD
   ret = esp32_mmcsd_initialize(0);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize SD slot: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize SD slot: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESP32_RT_TIMER
   ret = esp32_rt_timer_init();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_RTC_DRIVER
@@ -233,13 +231,12 @@ int esp32_bringup(void)
 
   ret = esp32_rtc_driverinit();
   if (ret < 0)
-    {
-      syslog(LOG_ERR,
-             "ERROR: Failed to Instantiate the RTC driver: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to Instantiate the RTC driver: %d\n", ret);
+  }
 #endif
 
-  mpu.i2c = esp32_i2cbus_initialize(0);
+  mpu.i2c  = esp32_i2cbus_initialize(0);
   mpu.addr = 0x68;
 
   board_lcd_initialize();

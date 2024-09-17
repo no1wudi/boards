@@ -51,19 +51,19 @@
 
 /* W5500 GPIO pins */
 
-#define GPIO_W5500_INTR   17
-#define GPIO_W5500_RESET  18
+#define GPIO_W5500_INTR  17
+#define GPIO_W5500_RESET 18
 
 /* W5500 is on SPI1 */
 
 #ifndef CONFIG_ESP32_SPI2
-# error "Need CONFIG_ESP32_SPI2 in the configuration"
+#error "Need CONFIG_ESP32_SPI2 in the configuration"
 #endif
 
 /* SPI Assumptions **********************************************************/
 
-#define W5500_SPI_PORTNO 2   /* On SPI2 */
-#define W5500_DEVNO      0   /* Only one W5500 */
+#define W5500_SPI_PORTNO 2 /* On SPI2 */
+#define W5500_DEVNO      0 /* Only one W5500 */
 
 /****************************************************************************
  * Private Types
@@ -71,9 +71,9 @@
 
 struct esp32_lower_s
 {
-  const struct w5500_lower_s lower;    /* Low-level MCU interface */
-  xcpt_t                     handler;  /* W5500 interrupt handler */
-  void                      *arg;      /* Argument that accompanies IRQ */
+  const struct w5500_lower_s lower;   /* Low-level MCU interface */
+  xcpt_t                     handler; /* W5500 interrupt handler */
+  void                      *arg;     /* Argument that accompanies IRQ */
 };
 
 /****************************************************************************
@@ -94,20 +94,17 @@ static void up_reset(const struct w5500_lower_s *lower, bool reset);
  * the W5500 GPIO interrupt.
  */
 
-static struct esp32_lower_s g_enclower =
-{
-  .lower =
-  {
-    .frequency = 1000000,
-    .spidevid  = 0,
-    .mode      = SPIDEV_MODE0,
-    .attach    = up_attach,
-    .enable    = up_enable,
-    .reset     = up_reset,
-  },
-  .handler = NULL,
-  .arg     = NULL
-};
+static struct esp32_lower_s g_enclower = {.lower =
+                                              {
+                                                  .frequency = 1000000,
+                                                  .spidevid  = 0,
+                                                  .mode      = SPIDEV_MODE0,
+                                                  .attach    = up_attach,
+                                                  .enable    = up_enable,
+                                                  .reset     = up_reset,
+                                              },
+                                          .handler = NULL,
+                                          .arg     = NULL};
 
 /****************************************************************************
  * Private Functions
@@ -142,21 +139,21 @@ static void up_enable(const struct w5500_lower_s *lower, bool enable)
 
   DEBUGASSERT(priv->handler);
   if (enable)
+  {
+    ret = irq_attach(irq, priv->handler, priv->arg);
+    if (ret < 0)
     {
-      ret = irq_attach(irq, priv->handler, priv->arg);
-      if (ret < 0)
-        {
-          syslog(LOG_ERR, "ERROR: irq_attach() failed: %d\n", ret);
-        }
-
-      /* IRQ on rising edge */
-
-      esp32_gpioirqenable(irq, RISING);
+      syslog(LOG_ERR, "ERROR: irq_attach() failed: %d\n", ret);
     }
+
+    /* IRQ on rising edge */
+
+    esp32_gpioirqenable(irq, RISING);
+  }
   else
-    {
-      /* Just keep interrupt disabled is enough */
-    }
+  {
+    /* Just keep interrupt disabled is enough */
+  }
 }
 
 /* REVISIT:  Since the interrupt is completely torn down, not just disabled,
@@ -182,7 +179,7 @@ static void up_reset(const struct w5500_lower_s *lower, bool reset)
 void up_netinitialize(void)
 {
   struct spi_dev_s *spi;
-  int ret;
+  int               ret;
 
   /* Configure the interrupt pin */
 
@@ -191,8 +188,7 @@ void up_netinitialize(void)
   /* Configure the reset pin as output */
 
   esp32_gpio_matrix_out(GPIO_W5500_RESET, SIG_GPIO_OUT_IDX, 0, 0);
-  esp32_configgpio(GPIO_W5500_RESET, OUTPUT_FUNCTION_1 |
-                     INPUT_FUNCTION_1);
+  esp32_configgpio(GPIO_W5500_RESET, OUTPUT_FUNCTION_1 | INPUT_FUNCTION_1);
 
   /* Assumptions:
    * 1) W5500 pins were configured in up_spi.c early in the boot-up phase.
@@ -202,22 +198,21 @@ void up_netinitialize(void)
 
   spi = esp32_spibus_initialize(W5500_SPI_PORTNO);
   if (!spi)
-    {
-      nerr("ERROR: Failed to initialize SPI port %d\n", W5500_SPI_PORTNO);
-      return;
-    }
+  {
+    nerr("ERROR: Failed to initialize SPI port %d\n", W5500_SPI_PORTNO);
+    return;
+  }
 
   /* Bind the SPI port to the W5500 driver */
 
   ret = w5500_initialize(spi, &g_enclower.lower, W5500_DEVNO);
   if (ret < 0)
-    {
-      nerr("ERROR: Failed to bind SPI port %d W5500 device %d: %d\n",
-           W5500_SPI_PORTNO, W5500_DEVNO, ret);
-      return;
-    }
+  {
+    nerr("ERROR: Failed to bind SPI port %d W5500 device %d: %d\n",
+         W5500_SPI_PORTNO, W5500_DEVNO, ret);
+    return;
+  }
 
-  ninfo("Bound SPI port %d to W5500 device %d\n",
-        W5500_SPI_PORTNO, W5500_DEVNO);
+  ninfo("Bound SPI port %d to W5500 device %d\n", W5500_SPI_PORTNO,
+        W5500_DEVNO);
 }
-

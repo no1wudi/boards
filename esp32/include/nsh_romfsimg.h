@@ -20,4 +20,4 @@
 #pragma once
 
 extern const unsigned char romfs_img[];
-extern const unsigned int romfs_img_len;
+extern const unsigned int  romfs_img_len;

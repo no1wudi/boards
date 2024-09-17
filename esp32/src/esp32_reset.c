@@ -35,7 +35,7 @@
 #ifdef CONFIG_BOARDCTL_RESET
 
 #if CONFIG_BOARD_ASSERT_RESET_VALUE == EXIT_SUCCESS
-#  error "CONFIG_BOARD_ASSERT_RESET_VALUE must not be equal to EXIT_SUCCESS"
+#error "CONFIG_BOARD_ASSERT_RESET_VALUE must not be equal to EXIT_SUCCESS"
 #endif
 
 /****************************************************************************
@@ -67,17 +67,17 @@ int board_reset(int status)
   syslog(LOG_INFO, "reboot status=%d\n", status);
 
   switch (status)
-    {
-      case EXIT_SUCCESS:
-        up_shutdown_handler();
-        break;
+  {
+  case EXIT_SUCCESS:
+    up_shutdown_handler();
+    break;
 
-      case CONFIG_BOARD_ASSERT_RESET_VALUE:
-        break;
+  case CONFIG_BOARD_ASSERT_RESET_VALUE:
+    break;
 
-      default:
-        break;
-    }
+  default:
+    break;
+  }
 
   up_systemreset();
 

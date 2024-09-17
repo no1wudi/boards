@@ -38,49 +38,49 @@
 #include "esp_board_spiflash.h"
 
 #ifdef CONFIG_WATCHDOG
-#  include "espressif/esp_wdt.h"
+#include "espressif/esp_wdt.h"
 #endif
 
 #ifdef CONFIG_TIMER
-#  include "espressif/esp_timer.h"
+#include "espressif/esp_timer.h"
 #endif
 
 #ifdef CONFIG_ONESHOT
-#  include "espressif/esp_oneshot.h"
+#include "espressif/esp_oneshot.h"
 #endif
 
 #ifdef CONFIG_RTC_DRIVER
-#  include "espressif/esp_rtc.h"
+#include "espressif/esp_rtc.h"
 #endif
 
 #ifdef CONFIG_DEV_GPIO
-#  include "espressif/esp_gpio.h"
+#include "espressif/esp_gpio.h"
 #endif
 
 #ifdef CONFIG_INPUT_BUTTONS
-#  include <nuttx/input/buttons.h>
+#include <nuttx/input/buttons.h>
 #endif
 
 #ifdef CONFIG_ESP_RMT
-#  include "esp_board_rmt.h"
+#include "esp_board_rmt.h"
 #endif
 
 #ifdef CONFIG_ESPRESSIF_SPI
-#  include "espressif/esp_spi.h"
-#  include "esp_board_spidev.h"
+#include "espressif/esp_spi.h"
+#include "esp_board_spidev.h"
 #endif
 
 #ifdef CONFIG_ESPRESSIF_WIFI_BT_COEXIST
-#  include "esp_coexist_internal.h"
+#include "esp_coexist_internal.h"
 #endif
 
 #ifdef CONFIG_ESPRESSIF_WIFI
-#  include "esp_board_wlan.h"
+#include "esp_board_wlan.h"
 #endif
 
 #ifdef CONFIG_SPI_SLAVE_DRIVER
-#  include "espressif/esp_spi.h"
-#  include "esp_board_spislavedev.h"
+#include "espressif/esp_spi.h"
+#include "esp_board_spislavedev.h"
 #endif
 
 #include "esp32c3-generic.h"
@@ -123,9 +123,9 @@ int esp_bringup(void)
 
   ret = nx_mount(NULL, "/proc", "procfs", 0, NULL);
   if (ret < 0)
-    {
-      _err("Failed to mount procfs at /proc: %d\n", ret);
-    }
+  {
+    _err("Failed to mount procfs at /proc: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_FS_TMPFS
@@ -133,73 +133,73 @@ int esp_bringup(void)
 
   ret = nx_mount(NULL, CONFIG_LIBC_TMPDIR, "tmpfs", 0, NULL);
   if (ret < 0)
-    {
-      _err("Failed to mount tmpfs at %s: %d\n", CONFIG_LIBC_TMPDIR, ret);
-    }
+  {
+    _err("Failed to mount tmpfs at %s: %d\n", CONFIG_LIBC_TMPDIR, ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_MWDT0
   ret = esp_wdt_initialize("/dev/watchdog0", ESP_WDT_MWDT0);
   if (ret < 0)
-    {
-      _err("Failed to initialize WDT: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize WDT: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_MWDT1
   ret = esp_wdt_initialize("/dev/watchdog1", ESP_WDT_MWDT1);
   if (ret < 0)
-    {
-      _err("Failed to initialize WDT: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize WDT: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_RWDT
   ret = esp_wdt_initialize("/dev/watchdog2", ESP_WDT_RWDT);
   if (ret < 0)
-    {
-      _err("Failed to initialize WDT: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize WDT: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_XTWDT
   ret = esp_wdt_initialize("/dev/watchdog3", ESP_WDT_XTAL32K);
   if (ret < 0)
-    {
-      _err("Failed to initialize WDT: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize WDT: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_TIMER
   ret = esp_timer_initialize(0);
   if (ret < 0)
-    {
-      _err("Failed to initialize Timer 0: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize Timer 0: %d\n", ret);
+  }
 
 #ifndef CONFIG_ONESHOT
   ret = esp_timer_initialize(1);
   if (ret < 0)
-    {
-      _err("Failed to initialize Timer 1: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize Timer 1: %d\n", ret);
+  }
 #endif
 #endif
 
 #if defined(CONFIG_ESPRESSIF_SPI) && defined(CONFIG_SPI_DRIVER)
   ret = board_spidev_initialize(ESPRESSIF_SPI2);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to init spidev 2: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to init spidev 2: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_SPIFLASH
   ret = board_spiflash_init();
   if (ret)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_WIFI_BT_COEXIST
@@ -210,41 +210,40 @@ int esp_bringup(void)
 #ifdef CONFIG_ESPRESSIF_WIFI
   ret = board_wlan_init();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: Failed to initialize wireless subsystem=%d\n",
-             ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: Failed to initialize wireless subsystem=%d\n", ret);
+  }
 #endif
 
 #if defined(CONFIG_SPI_SLAVE_DRIVER) && defined(CONFIG_ESPRESSIF_SPI2)
   ret = board_spislavedev_initialize(ESPRESSIF_SPI2);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize SPI%d Slave driver: %d\n",
-             ESPRESSIF_SPI2, ret);
-    }
+  {
+    syslog(LOG_ERR, "Failed to initialize SPI%d Slave driver: %d\n",
+           ESPRESSIF_SPI2, ret);
+  }
 #endif
 
 #ifdef CONFIG_ONESHOT
   ret = esp_oneshot_initialize();
   if (ret < 0)
-    {
-      _err("Failed to initialize Oneshot Timer: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize Oneshot Timer: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESP_RMT
   ret = board_rmt_txinitialize(RMT_TXCHANNEL, RMT_OUTPUT_PIN);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: board_rmt_txinitialize() failed: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: board_rmt_txinitialize() failed: %d\n", ret);
+  }
 
   ret = board_rmt_rxinitialize(RMT_RXCHANNEL, RMT_INPUT_PIN);
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: board_rmt_txinitialize() failed: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: board_rmt_txinitialize() failed: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_RTC_DRIVER
@@ -252,9 +251,9 @@ int esp_bringup(void)
 
   ret = esp_rtc_driverinit();
   if (ret < 0)
-    {
-      _err("Failed to initialize the RTC driver: %d\n", ret);
-    }
+  {
+    _err("Failed to initialize the RTC driver: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_TWAI
@@ -263,17 +262,17 @@ int esp_bringup(void)
 
   ret = board_twai_setup();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: board_twai_setup failed: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: board_twai_setup failed: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_DEV_GPIO
   ret = esp_gpio_init();
   if (ret < 0)
-    {
-      ierr("Failed to initialize GPIO Driver: %d\n", ret);
-    }
+  {
+    ierr("Failed to initialize GPIO Driver: %d\n", ret);
+  }
 #endif
 
 #if defined(CONFIG_INPUT_BUTTONS) && defined(CONFIG_INPUT_BUTTONS_LOWER)
@@ -281,17 +280,17 @@ int esp_bringup(void)
 
   ret = btn_lower_initialize("/dev/buttons");
   if (ret < 0)
-    {
-      ierr("ERROR: btn_lower_initialize() failed: %d\n", ret);
-    }
+  {
+    ierr("ERROR: btn_lower_initialize() failed: %d\n", ret);
+  }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_LEDC
   ret = board_ledc_setup();
   if (ret < 0)
-    {
-      syslog(LOG_ERR, "ERROR: board_ledc_setup() failed: %d\n", ret);
-    }
+  {
+    syslog(LOG_ERR, "ERROR: board_ledc_setup() failed: %d\n", ret);
+  }
 #endif /* CONFIG_ESPRESSIF_LEDC */
 
   /* If we got here then perhaps not all initialization was successful, but

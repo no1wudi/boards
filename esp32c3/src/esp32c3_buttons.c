@@ -96,42 +96,42 @@ uint32_t board_button_initialize(void)
 uint32_t board_buttons(void)
 {
   uint8_t ret = 0;
-  int i = 0;
-  int n = 0;
+  int     i   = 0;
+  int     n   = 0;
 
   bool b0 = esp_gpioread(BUTTON_BOOT);
 
   for (i = 0; i < 10; i++)
+  {
+    up_mdelay(1); /* TODO */
+
+    bool b1 = esp_gpioread(BUTTON_BOOT);
+
+    if (b0 == b1)
     {
-      up_mdelay(1); /* TODO */
-
-      bool b1 = esp_gpioread(BUTTON_BOOT);
-
-      if (b0 == b1)
-        {
-          n++;
-        }
-      else
-        {
-          n = 0;
-        }
-
-      if (3 == n)
-        {
-          break;
-        }
-
-      b0 = b1;
+      n++;
     }
+    else
+    {
+      n = 0;
+    }
+
+    if (3 == n)
+    {
+      break;
+    }
+
+    b0 = b1;
+  }
 
   iinfo("b=%d n=%d\n", b0, n);
 
   /* Low value means that the button is pressed */
 
   if (!b0)
-    {
-      ret = 0x1;
-    }
+  {
+    ret = 0x1;
+  }
 
   return ret;
 }
@@ -168,30 +168,30 @@ int board_button_irq(int id, xcpt_t irqhandler, void *arg)
   int irq = ESP_PIN2IRQ(BUTTON_BOOT);
 
   if (NULL != irqhandler)
+  {
+    /* Make sure the interrupt is disabled */
+
+    esp_gpioirqdisable(irq);
+
+    gpioinfo("Attach %p\n", irqhandler);
+
+    ret = irq_attach(irq, irqhandler, arg);
+    if (ret < 0)
     {
-      /* Make sure the interrupt is disabled */
-
-      esp_gpioirqdisable(irq);
-
-      gpioinfo("Attach %p\n", irqhandler);
-
-      ret = irq_attach(irq, irqhandler, arg);
-      if (ret < 0)
-        {
-          syslog(LOG_ERR, "ERROR: irq_attach() failed: %d\n", ret);
-          return ret;
-        }
-
-      /* Configure the interrupt for rising and falling edges */
-
-      gpioinfo("Enabling the interrupt\n");
-      esp_gpioirqenable(irq, CHANGE);
+      syslog(LOG_ERR, "ERROR: irq_attach() failed: %d\n", ret);
+      return ret;
     }
+
+    /* Configure the interrupt for rising and falling edges */
+
+    gpioinfo("Enabling the interrupt\n");
+    esp_gpioirqenable(irq, CHANGE);
+  }
   else
-    {
-      gpioinfo("Disable the interrupt\n");
-      esp_gpioirqdisable(irq);
-    }
+  {
+    gpioinfo("Disable the interrupt\n");
+    esp_gpioirqdisable(irq);
+  }
 
   return OK;
 }

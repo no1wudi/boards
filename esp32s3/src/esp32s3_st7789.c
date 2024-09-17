@@ -54,9 +54,9 @@ struct lcd_dev_s *board_graphics_setup(unsigned int devno)
 
   spi = esp32s3_spibus_initialize(2);
   if (!spi)
-    {
-      return NULL;
-    }
+  {
+    return NULL;
+  }
 
   return st7789_lcdinitialize(spi);
 }
@@ -69,10 +69,10 @@ uint8_t esp32s3_spi2_status(struct spi_dev_s *dev, uint32_t devid)
 int esp32s3_spi2_cmddata(struct spi_dev_s *dev, uint32_t devid, bool cmd)
 {
   if (devid == SPIDEV_DISPLAY(0))
-    {
-      esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_LCD_ST7789_DC_PIN, !cmd);
-      return OK;
-    }
+  {
+    esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_LCD_ST7789_DC_PIN, !cmd);
+    return OK;
+  }
 
   return -ENODEV;
 }

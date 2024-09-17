@@ -60,24 +60,23 @@
 int esp32_mmcsd_initialize(int minor)
 {
   struct spi_dev_s *spi;
-  int rv;
+  int               rv;
 
   mcinfo("INFO: Initializing mmcsd card\n");
 
   spi = esp32_spibus_initialize(CONFIG_NSH_MMCSDSPIPORTNO);
   if (spi == NULL)
-    {
-      mcerr("ERROR: Failed to initialize SPI port %d\n", 2);
-      return -ENODEV;
-    }
+  {
+    mcerr("ERROR: Failed to initialize SPI port %d\n", 2);
+    return -ENODEV;
+  }
 
   rv = mmcsd_spislotinitialize(minor, 0, spi);
   if (rv < 0)
-    {
-      mcerr("ERROR: Failed to bind SPI port %d to SD slot %d\n",
-            2, 0);
-      return rv;
-    }
+  {
+    mcerr("ERROR: Failed to bind SPI port %d to SD slot %d\n", 2, 0);
+    return rv;
+  }
 
   spiinfo("INFO: mmcsd card has been initialized successfully\n");
   return OK;
