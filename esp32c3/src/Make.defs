@@ -40,6 +40,10 @@ ifeq ($(CONFIG_ARCH_BUTTONS),y)
   CSRCS += esp32c3_buttons.c
 endif
 
+ifeq ($(CONFIG_BOARD_LCD_SSD1681),y)
+  CSRCS += esp32c3_ssd1681.c
+endif
+
 DEPPATH += --dep-path board
 VPATH += :board
 CFLAGS += ${INCDIR_PREFIX}$(TOPDIR)$(DELIM)arch$(DELIM)$(CONFIG_ARCH)$(DELIM)src$(DELIM)board$(DELIM)board

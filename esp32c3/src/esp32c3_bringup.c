@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #include <nuttx/fs/fs.h>
+#include <nuttx/video/fb.h>
 
 #include "esp_board_ledc.h"
 #include "esp_board_spiflash.h"
@@ -292,6 +293,14 @@ int esp_bringup(void)
     syslog(LOG_ERR, "ERROR: board_ledc_setup() failed: %d\n", ret);
   }
 #endif /* CONFIG_ESPRESSIF_LEDC */
+
+#ifdef CONFIG_VIDEO_FB
+  ret = fb_register(0, 0);
+  if (ret < 0)
+  {
+    syslog(LOG_ERR, "ERROR: Framebuffer registration failed: %d\n", ret);
+  }
+#endif /* CONFIG_VIDEO_FB */
 
   /* If we got here then perhaps not all initialization was successful, but
    * at least enough succeeded to bring-up NSH with perhaps reduced

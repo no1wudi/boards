@@ -2,3 +2,20 @@
 # For a description of the syntax of this configuration file,
 # see the file kconfig-language.txt in the NuttX tools repository.
 #
+
+config BOARD_LCD_SSD1681
+    bool "Enable SSD1681 LCD"
+    default n
+
+if BOARD_LCD_SSD1681
+
+config BOARD_SSD1681_RESET_IO
+    int "SSD1681 Reset IO"
+    default 8
+
+config BOARD_SSD1681_BUSY_IO
+    int "SSD1681 Busy IO"
+    default 5
+
+
+endif # BOARD_LCD_SSD1681
