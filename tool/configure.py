@@ -37,9 +37,8 @@ def configure_nuttx(nuttx_path, board_config):
 
 
 def apply_presets(nuttx_path, presets):
-    config_path = os.path.join(nuttx_path, '.config')
-    if not os.path.exists(config_path):
-        print("Error: .config file not found. Please configure NuttX first.")
+    if not is_nuttx_configured(nuttx_path):
+        print("Error: .config file not found for applying presets")
         sys.exit(1)
 
     for preset in presets:
@@ -68,10 +67,11 @@ def apply_presets(nuttx_path, presets):
 
 
 def generate_clangd_config(nuttx_path):
-    config_path = os.path.join(nuttx_path, '.config')
-    if not os.path.exists(config_path):
-        return
+    if not is_nuttx_configured(nuttx_path):
+        print("Error: .config file not found for clangd configuration")
+        sys.exit(1)
 
+    config_path = os.path.join(nuttx_path, '.config')
     target = "thumbv7m"
 
     # Mapping of configuration to target
