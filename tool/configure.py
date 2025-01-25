@@ -9,7 +9,6 @@ RUST_CONFIG = [
     ('enable', 'CONFIG_FS_LARGEFILE'),
     ('enable', 'CONFIG_DEV_URANDOM'),
     ('set-val', 'CONFIG_TLS_NELEM', '16'),
-    ('enable', 'CONFIG_EXAMPLES_HELLO_RUST_CARGO'),
 ]
 
 PRESETS = {
