@@ -76,6 +76,9 @@ def generate_clangd_config(nuttx_path):
 
     # Mapping of configuration to target
     config_to_target = {
+        'CONFIG_ARCH_XTENSA': "xtensa",
+        'CONFIG_ARCH_X86': "i686",
+        'CONFIG_ARCH_X86_64': "x86_64",
         'CONFIG_ARCH_CORTEXM0': "thumbv6m",
         'CONFIG_ARCH_CORTEXM3': "thumbv7m",
         'CONFIG_ARCH_CORTEXM4': "thumbv7em",
