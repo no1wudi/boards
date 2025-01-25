@@ -94,7 +94,8 @@ def generate_clangd_config(nuttx_path):
     with open(config_path, 'r') as f:
         for line in f:
             for config, tgt in config_to_target.items():
-                if config in line:
+                relconfig = f"{config}=y"
+                if relconfig in line:
                     target = tgt
                     break
             else:
