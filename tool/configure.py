@@ -17,6 +17,14 @@ PRESETS = {
 
 
 def run_command(cmd):
+    """Execute a shell command and exit on failure.
+    
+    Args:
+        cmd (str): The shell command to execute
+        
+    Raises:
+        SystemExit: If the command fails (non-zero return code)
+    """
     ret = os.system(cmd)
     if ret != 0:
         print(f'Error executing command: {cmd}')
@@ -24,10 +32,27 @@ def run_command(cmd):
 
 
 def is_nuttx_configured(nuttx_path):
+    """Check if NuttX has been configured by looking for .config file.
+    
+    Args:
+        nuttx_path (str): Path to NuttX directory
+        
+    Returns:
+        bool: True if .config exists, False otherwise
+    """
     return os.path.exists(os.path.join(nuttx_path, '.config'))
 
 
 def configure_nuttx(nuttx_path, board_config):
+    """Configure NuttX for a specific board.
+    
+    Args:
+        nuttx_path (str): Path to NuttX directory
+        board_config (str): Board configuration string for configure.sh
+        
+    Note:
+        Runs 'make distclean' if NuttX is already configured
+    """
     os.chdir(nuttx_path)
     if is_nuttx_configured(nuttx_path):
         print('NuttX already configured, running distclean')
@@ -37,6 +62,15 @@ def configure_nuttx(nuttx_path, board_config):
 
 
 def apply_presets(nuttx_path, presets):
+    """Apply configuration presets using kconfig-tweak.
+    
+    Args:
+        nuttx_path (str): Path to NuttX directory
+        presets (list): List of preset names to apply
+        
+    Note:
+        Runs 'make olddefconfig' after applying presets to resolve dependencies
+    """
     if not is_nuttx_configured(nuttx_path):
         print('Error: .config file not found for applying presets')
         sys.exit(1)
@@ -67,6 +101,15 @@ def apply_presets(nuttx_path, presets):
 
 
 def generate_clangd_config(nuttx_path):
+    """Generate .clangd configuration file for better IDE support.
+    
+    Args:
+        nuttx_path (str): Path to NuttX directory
+        
+    Note:
+        Creates .clangd file in parent directory of NuttX
+        Determines target architecture from .config file
+    """
     if not is_nuttx_configured(nuttx_path):
         print('Error: .config file not found for clangd configuration')
         sys.exit(1)
@@ -121,6 +164,13 @@ CompileFlags:
 
 
 def main():
+    """Main entry point for NuttX configuration tool.
+    
+    Handles command line arguments and orchestrates:
+    - NuttX configuration
+    - Preset application
+    - Clangd configuration generation
+    """
     parser = argparse.ArgumentParser(description='Configure and build NuttX')
     parser.add_argument(
         'board_config', help='Path to board configuration directory')
