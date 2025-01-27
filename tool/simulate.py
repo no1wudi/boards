@@ -25,7 +25,11 @@ TARGET_CONFIGS = {
     'mps3-an547': {
         'required': ['CONFIG_ARCH_BOARD_MPS3_AN547=y'],
         'command': 'qemu-system-arm -M mps3-an547 -kernel {kernel_path} -nographic'
-    }
+    },
+    'qemu-i486': {
+        'required': ['CONFIG_ARCH_CHIP_QEMU_I486=y'],
+        'command': 'qemu-system-i386 -kernel {kernel_path}.elf -nographic'
+    },
 }
 
 
