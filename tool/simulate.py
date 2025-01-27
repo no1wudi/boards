@@ -22,6 +22,10 @@ TARGET_CONFIGS = {
         'required': ['CONFIG_ARCH_CHIP_IMX6_6QUAD=y', 'CONFIG_SMP=y'],
         'command': 'qemu-system-arm -M sabrelite -smp 4 -kernel {kernel_path} -nographic'
     },
+    'mps3-an547': {
+        'required': ['CONFIG_ARCH_BOARD_MPS3_AN547=y'],
+        'command': 'qemu-system-arm -M mps3-an547 -kernel {kernel_path} -nographic'
+    }
 }
 
 
@@ -81,7 +85,7 @@ def run_simulation(nuttx_path):
 
     kernel_path = os.path.join(nuttx_path, 'nuttx')
     cmd = TARGET_CONFIGS[target]['command'].format(kernel_path=kernel_path)
-    print(f"Detected target: {target}")
+    print(f"Target: {target}")
     print(f"Running: {cmd}")
 
     try:
