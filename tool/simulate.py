@@ -30,6 +30,14 @@ TARGET_CONFIGS = {
         'required': ['CONFIG_ARCH_CHIP_QEMU_I486=y'],
         'command': 'qemu-system-i386 -kernel {kernel_path}.elf -nographic'
     },
+    'qemu-x64': {
+        'required': ['CONFIG_ARCH_BOARD_INTEL64_QEMU=y'],
+        'command': 'qemu-system-x86_64 -cpu host --enable-kvm -m 2G -kernel {kernel_path} -nographic'
+    },
+    'sim': {
+        'required': ['CONFIG_ARCH_SIM=y', 'CONFIG_HOST_X86_64=y'],
+        'command': '{kernel_path}'
+    },
 }
 
 
