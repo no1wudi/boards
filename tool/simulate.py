@@ -14,6 +14,14 @@ TARGET_CONFIGS = {
         'required': ['CONFIG_ARCH_BOARD_QEMU_RV_VIRT=y', 'CONFIG_ARCH_RV64=y'],
         'command': 'qemu-system-riscv64 -semihosting -M virt,aclint=on -cpu rv64 -smp 8 -bios none -kernel {kernel_path} -nographic'
     },
+    'sabre-6quad': {
+        'required': ['CONFIG_ARCH_CHIP_IMX6_6QUAD=y', 'CONFIG_SMP is not set'],
+        'command': 'qemu-system-arm -M sabrelite -smp 1 -kernel {kernel_path} -nographic'
+    },
+    'sabre-6quad-smp': {
+        'required': ['CONFIG_ARCH_CHIP_IMX6_6QUAD=y', 'CONFIG_SMP=y'],
+        'command': 'qemu-system-arm -M sabrelite -smp 4 -kernel {kernel_path} -nographic'
+    },
 }
 
 
