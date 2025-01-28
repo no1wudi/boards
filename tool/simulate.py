@@ -5,7 +5,7 @@ import sys
 
 # Mapping of target detection rules to QEMU commands
 TARGET_CONFIGS = {
-    # Format: {target_name: {'required': [configs], 'optional': [configs], 'command': qemu_cmd}}
+    # Format: {target_name: {'required': [configs], 'optional': [configs], 'command': qemu_cmd, 'file_ext': file_extension}}
     'qemu-rv32': {
         'required': ['CONFIG_ARCH_BOARD_QEMU_RV_VIRT=y', 'CONFIG_ARCH_RV32=y'],
         'command': 'qemu-system-riscv32 -semihosting -M virt,aclint=on -cpu rv32 -smp 8 -bios none -kernel {kernel_path} -nographic'
@@ -28,7 +28,8 @@ TARGET_CONFIGS = {
     },
     'qemu-i486': {
         'required': ['CONFIG_ARCH_CHIP_QEMU_I486=y'],
-        'command': 'qemu-system-i386 -kernel {kernel_path}.elf -nographic'
+        'command': 'qemu-system-i386 -kernel {kernel_path}.elf -nographic',
+        'file_ext': '.elf'
     },
     'qemu-x64': {
         'required': ['CONFIG_ARCH_BOARD_INTEL64_QEMU=y'],
@@ -96,7 +97,12 @@ def run_simulation(nuttx_path):
         sys.exit(1)
 
     kernel_path = os.path.join(nuttx_path, 'nuttx')
-    cmd = TARGET_CONFIGS[target]['command'].format(kernel_path=kernel_path)
+    file_ext = ''
+    if 'file_ext' in TARGET_CONFIGS[target]:
+        file_ext = TARGET_CONFIGS[target]['file_ext']
+
+    cmd = TARGET_CONFIGS[target]['command'].format(
+        kernel_path=f'{kernel_path}{file_ext}')
     print(f"Target: {target}")
     print(f"Running: {cmd}")
 
