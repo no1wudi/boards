@@ -28,7 +28,7 @@ TARGET_CONFIGS = {
     },
     'qemu-i486': {
         'required': ['CONFIG_ARCH_CHIP_QEMU_I486=y'],
-        'command': 'qemu-system-i386 -kernel {kernel_path}.elf -nographic',
+        'command': 'qemu-system-i386 -kernel {kernel_path} -nographic',
         'file_ext': '.elf'
     },
     'qemu-x64': {

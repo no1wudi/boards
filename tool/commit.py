@@ -31,6 +31,12 @@ def parse_args():
         action='store_true',
         help='Enable verbose output for debugging'
     )
+    parser.add_argument(
+        '--format',
+        default='nuttx',
+        choices=['nuttx', 'common', 'rust'],
+        help='Commit message format style'
+    )
     args = parser.parse_args()
 
     # Auto-detect model based on API endpoint
@@ -164,8 +170,9 @@ class Git:
                 size = os.path.getsize(os.path.join(self.repo_path, file_path))
                 file_sizes.append((file_path, size))
             except IOError:
-                print(f"Error: Failed to read file: {file_path}")
-                sys.exit(1)
+                print(f"Warning: Failed to read file: {file_path}")
+                # Remove file from file_paths list
+                file_paths.remove(file_path)
 
         # Calculate total size
         total_size = sum(size for _, size in file_sizes)
@@ -188,8 +195,7 @@ class Git:
                 with open(os.path.join(self.repo_path, file_path), 'r') as f:
                     results.append((file_path, f.read()))
             except IOError:
-                print(f"Error: Failed to read file: {file_path}")
-                sys.exit(1)
+                print(f"Warning: Failed to read file: {file_path}")
 
         return results
 
@@ -259,7 +265,7 @@ class Git:
             sys.exit(1)
 
 
-def rewrite_commit_message(title, original_message, model, git, modified_files, verbose=False):
+def rewrite_commit_message(title, original_message, model, git, modified_files, verbose=False, format='nuttx'):
     """Use AI to rewrite a commit message while preserving the title.
 
     Args:
@@ -269,19 +275,13 @@ def rewrite_commit_message(title, original_message, model, git, modified_files, 
         git (Git): Git repository instance
         modified_files (list): List of modified file paths
         verbose (bool, optional): Whether to print debug info. Defaults to False.
+        format (str, optional): Commit message format style. Defaults to 'nuttx'.
 
     Returns:
         str: Rewritten commit message with original title preserved
     """
-    file_contents = []
-    for file_path, content in git.get_file_contents(modified_files):
-        if content:  # Only include files that weren't too large
-            file_contents.append(f"=== {file_path} ===\n{content}\n")
-
-    files_section = "\n".join(file_contents)
-    diff = git.get_commit_diff()
-
-    prompt = f"""You are a experienced software engineer, and you are writting a commit message with such structure:
+    format_prompts = {
+        'nuttx': """You are a experienced software engineer, and you are writting a commit message with such structure:
     - Keep the original title at the beginning
     - Summary
     - Impact
@@ -297,7 +297,50 @@ def rewrite_commit_message(title, original_message, model, git, modified_files, 
     - No functional changes - both `fence.i` and `__ISB()` ensure instruction
     synchronization on RISC-V
     - Makes the code more maintainable by using the architecture abstraction
-    layer
+    layer""",
+        'conventional': """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
+    <type>[optional scope]: <description>
+
+    [optional body]
+
+    [optional footer(s)]
+
+    Types: feat, fix, docs, style, refactor, perf, test, chore, etc.
+
+    === Sample Commit Message ===
+    feat(auth): implement OAuth2 authentication
+
+    - Add OAuth2 authentication flow using JWT tokens
+    - Implement refresh token mechanism
+    - Add user session management
+
+    BREAKING CHANGE: Authentication header format has changed""",
+        'rust': """You are an experienced Rust developer. Please write a commit message following the Rust project style:
+    <one-line summary>
+
+    <detailed description>
+
+    === Sample Commit Message ===
+    impl Debug for ParseError and fix error handling
+
+    * Add Debug implementation for ParseError enum
+    * Improve error propagation in parser module using `?` operator
+    * Replace manual error conversions with From trait implementations
+    * Add error tests to ensure correct error variants are returned
+
+    This change makes error handling more idiomatic and improves debuggability
+    when parsing fails.""",
+    }
+
+    file_contents = []
+    for file_path, content in git.get_file_contents(modified_files):
+        if content:  # Only include files that weren't too large
+            file_contents.append(f"=== {file_path} ===\n{content}\n")
+
+    files_section = "\n".join(file_contents)
+    diff = git.get_commit_diff()
+
+    prompt = f"""{format_prompts[format]}
 
     === Code Changes ===
     {diff}
@@ -373,7 +416,7 @@ if __name__ == "__main__":
     print()
 
     new_message = rewrite_commit_message(
-        title, original_message, args.model, git, modified_files, args.verbose)
+        title, original_message, args.model, git, modified_files, args.verbose, args.format)
 
     if preview_changes(original_message, new_message):
         git.update_commit_message(new_message)
