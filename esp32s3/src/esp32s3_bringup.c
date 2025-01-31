@@ -84,6 +84,9 @@ int esp32s3_bringup(void)
   esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_BUZZER_PIN, false);
 #endif
 
+  esp32s3_configgpio(CONFIG_BOARD_ESP32S3_TP_RST_PIN, OUTPUT | PULLUP);
+  esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_TP_RST_PIN, true);
+
 #ifdef CONFIG_FS_PROCFS
   /* Mount the procfs file system */
 

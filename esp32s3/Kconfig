@@ -29,3 +29,11 @@ config BOARD_ESP32S3_LCD_ST7789_BL_PIN
     default 15
 
 endif # LCD_ST7789
+
+config BOARD_ESP32S3_TP_RST_PIN
+    int "Touch Panel RST pin"
+    default 13
+
+config BOARD_ESP32S3_TP_INT_PIN
+    int "Touch Panel INT pin"
+    default 14
