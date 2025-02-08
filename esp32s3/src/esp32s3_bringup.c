@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <nuttx/fs/fs.h>
 #include <nuttx/video/fb.h>
+#include <nuttx/lcd/lcd_dev.h>
 
 #include "esp32s3_gpio.h"
 
@@ -154,8 +155,12 @@ int esp32s3_bringup(void)
   }
 #endif
 
-#if defined(CONFIG_VIDEO_FB)
+#ifdef CONFIG_VIDEO_FB
   fb_register(0, 0);
+#endif
+
+#ifdef CONFIG_LCD_DEV
+  lcddev_register(0);
 #endif
 
   UNUSED(ret);

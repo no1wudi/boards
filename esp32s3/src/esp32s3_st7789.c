@@ -34,6 +34,8 @@
  * Public Functions
  ****************************************************************************/
 
+static struct lcd_dev_s *g_lcd = NULL;
+
 struct lcd_dev_s *board_graphics_setup(unsigned int devno)
 {
   struct spi_dev_s *spi;
@@ -58,7 +60,9 @@ struct lcd_dev_s *board_graphics_setup(unsigned int devno)
     return NULL;
   }
 
-  return st7789_lcdinitialize(spi);
+  g_lcd = st7789_lcdinitialize(spi);
+
+  return g_lcd;
 }
 
 uint8_t esp32s3_spi2_status(struct spi_dev_s *dev, uint32_t devid)
@@ -75,4 +79,18 @@ int esp32s3_spi2_cmddata(struct spi_dev_s *dev, uint32_t devid, bool cmd)
   }
 
   return -ENODEV;
+}
+
+int board_lcd_initialize(void)
+{
+  return OK;
+}
+
+FAR struct lcd_dev_s *board_lcd_getdev(int lcddev)
+{
+  if (g_lcd == NULL)
+  {
+    g_lcd = board_graphics_setup(0);
+  }
+  return g_lcd;
 }
