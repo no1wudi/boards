@@ -24,23 +24,21 @@
 
 #include <nuttx/config.h>
 
-#include <stdio.h>
+#include <debug.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <syslog.h>
-#include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <syslog.h>
-#include <debug.h>
-#include <stdio.h>
+#include <unistd.h>
 
-#include <errno.h>
 #include <nuttx/fs/fs.h>
-#include <nuttx/video/fb.h>
+#include <nuttx/i2c/i2c_master.h>
 #include <nuttx/lcd/lcd_dev.h>
+#include <nuttx/video/fb.h>
 
 #include "esp32s3_gpio.h"
+#include "esp32s3_i2c.h"
 
 #ifdef CONFIG_ESP32S3_TIMER
 #include "esp32s3_board_tim.h"
@@ -161,6 +159,17 @@ int esp32s3_bringup(void)
 
 #ifdef CONFIG_LCD_DEV
   lcddev_register(0);
+#endif
+
+#ifdef CONFIG_ESP32S3_I2C0
+  /* Initialize I2C0 and register it to /dev/i2c0 */
+  struct i2c_master_s *master = esp32s3_i2cbus_initialize(0);
+#ifdef CONFIG_SYSTEM_I2CTOOL
+  if (master)
+  {
+    i2c_register(master, 0);
+  }
+#endif
 #endif
 
   UNUSED(ret);
