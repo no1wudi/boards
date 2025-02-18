@@ -14,47 +14,39 @@ def parse_args():
     Returns:
         argparse.Namespace: Parsed arguments with repo_path and model
     """
-    parser = argparse.ArgumentParser(
-        description='Rewrite git commit messages using AI'
+    parser = argparse.ArgumentParser(description="Rewrite git commit messages using AI")
+    parser.add_argument("repo_path", help="Path to the git repository")
+    parser.add_argument("--model", default="deepseek", help="LLM model to use")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose output for debugging",
     )
     parser.add_argument(
-        'repo_path',
-        help='Path to the git repository'
-    )
-    parser.add_argument(
-        '--model',
-        default='deepseek',
-        help='LLM model to use'
-    )
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='Enable verbose output for debugging'
-    )
-    parser.add_argument(
-        '--format',
-        default='nuttx',
-        choices=['nuttx', 'common', 'rust'],
-        help='Commit message format style'
+        "--format",
+        default="nuttx",
+        choices=["nuttx", "common", "rust"],
+        help="Commit message format style",
     )
     args = parser.parse_args()
 
     # Auto-detect model based on API endpoint
-    if args.model == 'deepseek':
-        args.model = 'openai/deepseek-chat'
+    if args.model == "deepseek":
+        args.model = "openai/deepseek-chat"
 
         # Configure LLM
         # deepseek
-        lm.api_base = 'https://api.deepseek.com/v1'
-        lm.api_key = os.getenv('DEEPSEEK_API_KEY')
+        lm.api_base = "https://api.deepseek.com/v1"
+        lm.api_key = os.getenv("DEEPSEEK_API_KEY")
         if not lm.api_key:
             print("Error: DEEPSEEK_API_KEY environment variable is not set")
             sys.exit(1)
 
     else:
         # Other models
-        lm.api_base = os.getenv('OPENAI_API_BASE')
-        lm.api_key = os.getenv('OPENAI_API_KEY')
+        lm.api_base = os.getenv("OPENAI_API_BASE")
+        lm.api_key = os.getenv("OPENAI_API_KEY")
 
     return args
 
@@ -79,7 +71,7 @@ class Git:
         if not os.path.exists(repo_path):
             print(f"Error: Path does not exist: {repo_path}")
             sys.exit(1)
-        if not os.path.exists(os.path.join(repo_path, '.git')):
+        if not os.path.exists(os.path.join(repo_path, ".git")):
             print(f"Error: Not a git repository: {repo_path}")
             sys.exit(1)
         return repo_path
@@ -91,14 +83,18 @@ class Git:
             SystemExit: If repository has uncommitted changes or status check fails
         """
         try:
-            status = subprocess.check_output(
-                ['git', 'status', '--porcelain'],
-                cwd=self.repo_path
-            ).decode('utf-8').strip()
+            status = (
+                subprocess.check_output(
+                    ["git", "status", "--porcelain"], cwd=self.repo_path
+                )
+                .decode("utf-8")
+                .strip()
+            )
 
             if status:
                 print(
-                    "Error: Repository has uncommitted changes. Please commit or stash them first.")
+                    "Error: Repository has uncommitted changes. Please commit or stash them first."
+                )
                 sys.exit(1)
         except subprocess.CalledProcessError:
             print("Error: Failed to check repository status")
@@ -116,15 +112,21 @@ class Git:
             SystemExit: If git command fails
         """
         try:
-            branch_name = subprocess.check_output(
-                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
-                cwd=self.repo_path
-            ).decode('utf-8').strip()
+            branch_name = (
+                subprocess.check_output(
+                    ["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=self.repo_path
+                )
+                .decode("utf-8")
+                .strip()
+            )
 
-            commit_id = subprocess.check_output(
-                ['git', 'rev-parse', '--short', 'HEAD'],
-                cwd=self.repo_path
-            ).decode('utf-8').strip()
+            commit_id = (
+                subprocess.check_output(
+                    ["git", "rev-parse", "--short", "HEAD"], cwd=self.repo_path
+                )
+                .decode("utf-8")
+                .strip()
+            )
 
             return branch_name, commit_id
         except subprocess.CalledProcessError:
@@ -141,12 +143,15 @@ class Git:
             SystemExit: If git command fails
         """
         try:
-            output = subprocess.check_output(
-                ['git', 'diff', 'HEAD~1', 'HEAD', '--name-only'],
-                cwd=self.repo_path
-            ).decode('utf-8').strip()
+            output = (
+                subprocess.check_output(
+                    ["git", "diff", "HEAD~1", "HEAD", "--name-only"], cwd=self.repo_path
+                )
+                .decode("utf-8")
+                .strip()
+            )
 
-            return [f for f in output.split('\n') if f]
+            return [f for f in output.split("\n") if f]
         except subprocess.CalledProcessError:
             print("Error: Failed to get modified files")
             sys.exit(1)
@@ -185,14 +190,16 @@ class Git:
             while total_size > MAX_FILE_SIZE_KB * 1024 and file_sizes:
                 removed_file, removed_size = file_sizes.pop(0)
                 total_size -= removed_size
-                print(f"Omitting large file: {
-                      removed_file} ({removed_size} bytes)")
+                print(
+                    f"Omitting large file: {
+                      removed_file} ({removed_size} bytes)"
+                )
 
         # Now read remaining files
         results = []
         for file_path, size in file_sizes:
             try:
-                with open(os.path.join(self.repo_path, file_path), 'r') as f:
+                with open(os.path.join(self.repo_path, file_path), "r") as f:
                     results.append((file_path, f.read()))
             except IOError:
                 print(f"Warning: Failed to read file: {file_path}")
@@ -211,16 +218,22 @@ class Git:
             SystemExit: If git command fails
         """
         try:
-            message = subprocess.check_output(
-                ['git', 'log', '-1', '--pretty=%B'],
-                cwd=self.repo_path
-            ).decode('utf-8').strip()
+            message = (
+                subprocess.check_output(
+                    ["git", "log", "-1", "--pretty=%B"], cwd=self.repo_path
+                )
+                .decode("utf-8")
+                .strip()
+            )
 
-            lines = [line for line in message.split('\n')
-                     if not line.lower().startswith('signed-off-by:')]
-            clean_message = '\n'.join(lines).strip()
+            lines = [
+                line
+                for line in message.split("\n")
+                if not line.lower().startswith("signed-off-by:")
+            ]
+            clean_message = "\n".join(lines).strip()
 
-            title = clean_message.split('\n')[0]
+            title = clean_message.split("\n")[0]
             return title, clean_message
         except subprocess.CalledProcessError:
             print("Error: Failed to get commit message")
@@ -236,10 +249,13 @@ class Git:
             SystemExit: If git command fails
         """
         try:
-            return subprocess.check_output(
-                ['git', 'diff', 'HEAD~1', 'HEAD'],
-                cwd=self.repo_path
-            ).decode('utf-8').strip()
+            return (
+                subprocess.check_output(
+                    ["git", "diff", "HEAD~1", "HEAD"], cwd=self.repo_path
+                )
+                .decode("utf-8")
+                .strip()
+            )
         except subprocess.CalledProcessError:
             print("Error: Failed to get commit diff")
             sys.exit(1)
@@ -255,9 +271,9 @@ class Git:
         """
         try:
             subprocess.run(
-                ['git', 'commit', '--amend', '-s', '-m', new_message],
+                ["git", "commit", "--amend", "-s", "-m", new_message],
                 check=True,
-                cwd=self.repo_path
+                cwd=self.repo_path,
             )
             print("Successfully updated commit message")
         except subprocess.CalledProcessError:
@@ -265,7 +281,9 @@ class Git:
             sys.exit(1)
 
 
-def rewrite_commit_message(title, original_message, model, git, modified_files, verbose=False, format='nuttx'):
+def rewrite_commit_message(
+    title, original_message, model, git, modified_files, verbose=False, format="nuttx"
+):
     """Use AI to rewrite a commit message while preserving the title.
 
     Args:
@@ -281,7 +299,7 @@ def rewrite_commit_message(title, original_message, model, git, modified_files, 
         str: Rewritten commit message with original title preserved
     """
     format_prompts = {
-        'nuttx': """You are a experienced software engineer, and you are writting a commit message with such structure:
+        "nuttx": """You are a experienced software engineer, and you are writting a commit message with such structure:
     - Keep the original title at the beginning
     - Summary
     - Impact
@@ -298,7 +316,7 @@ def rewrite_commit_message(title, original_message, model, git, modified_files, 
     synchronization on RISC-V
     - Makes the code more maintainable by using the architecture abstraction
     layer""",
-        'conventional': """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
+        "conventional": """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
     <type>[optional scope]: <description>
 
     [optional body]
@@ -315,7 +333,7 @@ def rewrite_commit_message(title, original_message, model, git, modified_files, 
     - Add user session management
 
     BREAKING CHANGE: Authentication header format has changed""",
-        'rust': """You are an experienced Rust developer. Please write a commit message following the Rust project style:
+        "rust": """You are an experienced Rust developer. Please write a commit message following the Rust project style:
     <one-line summary>
 
     <detailed description>
@@ -393,10 +411,9 @@ def preview_changes(original_message, new_message):
     print("\n=== New Commit Message ===")
     print(new_message)
     while True:
-        response = input(
-            "\nDo you want to apply these changes? [Y/n]: ").lower()
-        if response in ['y', 'n', '']:
-            return response != 'n'
+        response = input("\nDo you want to apply these changes? [Y/n]: ").lower()
+        if response in ["y", "n", ""]:
+            return response != "n"
 
 
 if __name__ == "__main__":
@@ -416,7 +433,14 @@ if __name__ == "__main__":
     print()
 
     new_message = rewrite_commit_message(
-        title, original_message, args.model, git, modified_files, args.verbose, args.format)
+        title,
+        original_message,
+        args.model,
+        git,
+        modified_files,
+        args.verbose,
+        args.format,
+    )
 
     if preview_changes(original_message, new_message):
         git.update_commit_message(new_message)
