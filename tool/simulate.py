@@ -2,6 +2,7 @@
 import os
 import subprocess
 import sys
+import argparse
 from kconfig import Kconfig
 
 # Mapping of target detection rules to QEMU commands
@@ -108,20 +109,14 @@ def run_simulation(nuttx_path):
 def main():
     """
     Main entry point for the simulation tool.
-
-    Parses command line arguments and initiates simulation.
-
-    Usage:
-        simulate.py <path_to_nuttx>
-
-    Raises:
-        SystemExit: If incorrect number of arguments provided
     """
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <path_to_nuttx>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="QEMU simulation tool for NuttX targets"
+    )
+    parser.add_argument("nuttx_path", help="Path to NuttX build directory")
 
-    nuttx_path = os.path.abspath(sys.argv[1])
+    args = parser.parse_args()
+    nuttx_path = os.path.abspath(args.nuttx_path)
     run_simulation(nuttx_path)
 
 
