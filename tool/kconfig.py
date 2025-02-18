@@ -36,3 +36,25 @@ class Kconfig:
     def check_configs(self, required_configs):
         """Check if all required configurations are present."""
         return all(self.has_config(config) for config in required_configs)
+
+    def get_value(self, config_name):
+        """
+        Get the value of a configuration option.
+
+        Args:
+            config_name (str): Name of the configuration option (e.g. CONFIG_UART0_BAUD)
+
+        Returns:
+            str or None: The value of the config if found, None otherwise
+            For boolean configs (CONFIG_XXX=y), returns 'y'
+            For numeric/string configs (CONFIG_XXX=123), returns the value after '='
+        """
+        if not isinstance(self._config_lines, str):
+            return None
+
+        for line in self._config_lines.splitlines():
+            line = line.strip()
+            if line.startswith(config_name + '='):
+                value = line.split('=', 1)[1]
+                return value
+        return None
