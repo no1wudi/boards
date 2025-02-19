@@ -7,6 +7,97 @@ import argparse
 # Maximum total size of files to include in commit message analysis
 MAX_FILE_SIZE_KB = 50
 
+# Format prompts for different commit message styles
+format_prompts = {
+    "nuttx": """You are an experienced software engineer writing a commit message following the Apache NuttX RTOS format:
+    <functional_context>: <topic>
+
+    <description>
+
+    === Required Format ===
+    - First line must have format: "<component>: <topic>"
+      Example: "sched: Fixed compiler warning"
+
+    - Description (optional) must be separated from topic by blank line
+
+    - Description can include bullet points for multiple items
+
+    === Sample Commit Message ===
+    net/can: Add g_ prefix to can_dlc_to_len and len_to_can_dlc.
+
+    Add g_ prefix to can_dlc_to_len and len_to_can_dlc to
+    follow NuttX coding style conventions for global symbols,
+    improving code readability and maintainability.
+    * Fixed naming convention for global symbols
+    * Improved code consistency
+    * Enhanced maintainability""",
+    "conventional": """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
+    <type>[optional scope]: <description>
+
+    [optional body]
+
+    [optional footer(s)]
+
+    Types: feat, fix, docs, style, refactor, perf, test, chore, etc.
+
+    === Sample Commit Message ===
+    feat(auth): implement OAuth2 authentication
+
+    - Add OAuth2 authentication flow using JWT tokens
+    - Implement refresh token mechanism
+    - Add user session management
+
+    BREAKING CHANGE: Authentication header format has changed""",
+    "rust": """You are an experienced Rust developer. Please write a commit message following the Rust project style:
+    <one-line summary>
+
+    <detailed description>
+
+    === Sample Commit Message ===
+    impl Debug for ParseError and fix error handling
+
+    * Add Debug implementation for ParseError enum
+    * Improve error propagation in parser module using `?` operator
+    * Replace manual error conversions with From trait implementations
+    * Add error tests to ensure correct error variants are returned
+
+    This change makes error handling more idiomatic and improves debuggability
+    when parsing fails.""",
+    "pr": """You are an experienced software engineer writing a pull request description for Apache NuttX RTOS:
+
+    === Required Format ===
+    Summary:
+    - Why change is necessary (fix, update, new feature)
+    - What functional part of code is being changed
+    - How change exactly works
+    - Related issue/PR references if applicable
+
+    Impact:
+    - New feature added? YES/NO (describe if yes)
+    - Impact on user? YES/NO (describe if yes)
+    - Impact on build? YES/NO (describe if yes)
+    - Impact on hardware? YES/NO (describe if yes)
+    - Impact on documentation? YES/NO (describe if yes)
+    - Impact on security? YES/NO (describe if yes)
+    - Impact on compatibility? YES/NO (describe if yes)
+
+    === Sample PR Description ===
+    Summary:
+    * Add support for new RISC-V SiFive board
+    * Implements basic GPIO and UART drivers
+    * Adds board configuration and documentation
+    * Related to issue #1234
+
+    Impact:
+    * New feature: YES - Adds new board support
+    * User impact: NO
+    * Build impact: YES - New board configs added to build system
+    * Hardware impact: YES - New RISC-V board support
+    * Documentation impact: YES - Added board documentation
+    * Security impact: NO
+    * Compatibility impact: NO""",
+}
+
 
 def parse_args():
     """Parse command line arguments.
@@ -298,96 +389,6 @@ def rewrite_commit_message(
     Returns:
         str: Rewritten commit message with original title preserved
     """
-    format_prompts = {
-        "nuttx": """You are an experienced software engineer writing a commit message following the Apache NuttX RTOS format:
-    <functional_context>: <topic>
-
-    <description>
-
-    === Required Format ===
-    - First line must have format: "<component>: <topic>"
-      Example: "sched: Fixed compiler warning"
-
-    - Description (optional) must be separated from topic by blank line
-
-    - Description can include bullet points for multiple items
-
-    === Sample Commit Message ===
-    net/can: Add g_ prefix to can_dlc_to_len and len_to_can_dlc.
-
-    Add g_ prefix to can_dlc_to_len and len_to_can_dlc to
-    follow NuttX coding style conventions for global symbols,
-    improving code readability and maintainability.
-    * Fixed naming convention for global symbols
-    * Improved code consistency
-    * Enhanced maintainability""",
-        "conventional": """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
-    <type>[optional scope]: <description>
-
-    [optional body]
-
-    [optional footer(s)]
-
-    Types: feat, fix, docs, style, refactor, perf, test, chore, etc.
-
-    === Sample Commit Message ===
-    feat(auth): implement OAuth2 authentication
-
-    - Add OAuth2 authentication flow using JWT tokens
-    - Implement refresh token mechanism
-    - Add user session management
-
-    BREAKING CHANGE: Authentication header format has changed""",
-        "rust": """You are an experienced Rust developer. Please write a commit message following the Rust project style:
-    <one-line summary>
-
-    <detailed description>
-
-    === Sample Commit Message ===
-    impl Debug for ParseError and fix error handling
-
-    * Add Debug implementation for ParseError enum
-    * Improve error propagation in parser module using `?` operator
-    * Replace manual error conversions with From trait implementations
-    * Add error tests to ensure correct error variants are returned
-
-    This change makes error handling more idiomatic and improves debuggability
-    when parsing fails.""",
-        "pr": """You are an experienced software engineer writing a pull request description for Apache NuttX RTOS:
-
-    === Required Format ===
-    Summary:
-    - Why change is necessary (fix, update, new feature)
-    - What functional part of code is being changed
-    - How change exactly works
-    - Related issue/PR references if applicable
-
-    Impact:
-    - New feature added? YES/NO (describe if yes)
-    - Impact on user? YES/NO (describe if yes)
-    - Impact on build? YES/NO (describe if yes)
-    - Impact on hardware? YES/NO (describe if yes)
-    - Impact on documentation? YES/NO (describe if yes)
-    - Impact on security? YES/NO (describe if yes)
-    - Impact on compatibility? YES/NO (describe if yes)
-
-    === Sample PR Description ===
-    Summary:
-    * Add support for new RISC-V SiFive board
-    * Implements basic GPIO and UART drivers
-    * Adds board configuration and documentation
-    * Related to issue #1234
-
-    Impact:
-    * New feature: YES - Adds new board support
-    * User impact: NO
-    * Build impact: YES - New board configs added to build system
-    * Hardware impact: YES - New RISC-V board support
-    * Documentation impact: YES - Added board documentation
-    * Security impact: NO
-    * Compatibility impact: NO""",
-    }
-
     file_contents = []
     for file_path, content in git.get_file_contents(modified_files):
         if content:  # Only include files that weren't too large
@@ -431,6 +432,63 @@ def rewrite_commit_message(
     return f"{new_message}"
 
 
+def write_pr_message(
+    title, original_message, model, git, modified_files, verbose=False
+):
+    """Use AI to write a PR description.
+
+    Args:
+        title (str): Original commit title
+        original_message (str): Full original commit message
+        model (str): LLM model to use for rewriting
+        git (Git): Git repository instance
+        modified_files (list): List of modified file paths
+        verbose (bool, optional): Whether to print debug info. Defaults to False
+
+    Returns:
+        str: PR description
+    """
+    file_contents = []
+    for file_path, content in git.get_file_contents(modified_files):
+        if content:
+            file_contents.append(f"=== {file_path} ===\n{content}\n")
+
+    files_section = "\n".join(file_contents)
+    diff = git.get_commit_diff()
+
+    prompt = f"""{format_prompts["pr"]}
+
+    === Code Changes ===
+    {diff}
+
+    === Modified Files ===
+    {files_section}
+
+    === Original commit message ===
+    {original_message}
+
+    Please write a pull request description based on the above changes."""
+
+    if verbose:
+        print("\n=== Sending to LLM ===")
+        print(f"Model: {model}")
+        print(f"Prompt:\n{prompt}\n")
+
+    response = lm.completion(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=1,
+        max_tokens=4000,
+    )
+
+    if verbose:
+        print("=== LLM Response ===")
+        print(f"Usage: {response.usage}")
+        print(f"Finish Reason: {response.choices[0].finish_reason}")
+
+    return response.choices[0].message.content.strip()
+
+
 def preview_changes(original_message, new_message):
     """Show diff between original and new message and prompt for confirmation.
 
@@ -470,15 +528,25 @@ if __name__ == "__main__":
     print(original_message)
     print()
 
-    new_message = rewrite_commit_message(
-        title,
-        original_message,
-        args.model,
-        git,
-        modified_files,
-        args.verbose,
-        args.format,
-    )
+    if args.format == "pr":
+        new_message = write_pr_message(
+            title,
+            original_message,
+            args.model,
+            git,
+            modified_files,
+            args.verbose,
+        )
+    else:
+        new_message = rewrite_commit_message(
+            title,
+            original_message,
+            args.model,
+            git,
+            modified_files,
+            args.verbose,
+            args.format,
+        )
 
     if preview_changes(original_message, new_message):
         git.update_commit_message(new_message)
