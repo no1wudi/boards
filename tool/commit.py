@@ -89,13 +89,13 @@ format_prompts = {
     * Related to issue #1234
 
     Impact:
-    * New feature: YES - Adds new board support
-    * User impact: NO
-    * Build impact: YES - New board configs added to build system
-    * Hardware impact: YES - New RISC-V board support
-    * Documentation impact: YES - Added board documentation
-    * Security impact: NO
-    * Compatibility impact: NO""",
+    * New feature added?: YES - Adds new board support
+    * Impact on user?: NO
+    * Impact on build?: YES - New board configs added to build system
+    * Impact on hardware?: YES - New RISC-V board support
+    * Impact on documentation?: YES - Added board documentation
+    * Impact on security?: NO
+    * Impact on compatibility?: NO""",
 }
 
 
