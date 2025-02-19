@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument(
         "--format",
         default="nuttx",
-        choices=["nuttx", "common", "rust"],
+        choices=["nuttx", "common", "rust", "pr"],
         help="Commit message format style",
     )
     args = parser.parse_args()
@@ -299,23 +299,28 @@ def rewrite_commit_message(
         str: Rewritten commit message with original title preserved
     """
     format_prompts = {
-        "nuttx": """You are a experienced software engineer, and you are writting a commit message with such structure:
-    - Keep the original title at the beginning
-    - Summary
-    - Impact
+        "nuttx": """You are an experienced software engineer writing a commit message following the Apache NuttX RTOS format:
+    <functional_context>: <topic>
+
+    <description>
+
+    === Required Format ===
+    - First line must have format: "<component>: <topic>"
+      Example: "sched: Fixed compiler warning"
+
+    - Description (optional) must be separated from topic by blank line
+
+    - Description can include bullet points for multiple items
 
     === Sample Commit Message ===
-    arch/risc-v: Replace fence.i with __ISB for instruction sync
+    net/can: Add g_ prefix to can_dlc_to_len and len_to_can_dlc.
 
-    Summary:
-    - Replace direct use of `fence.i` instruction with `__ISB()` macro for instruction synchronization
-    - This change improves portability while maintaining the same functionality
-
-    Impact:
-    - No functional changes - both `fence.i` and `__ISB()` ensure instruction
-    synchronization on RISC-V
-    - Makes the code more maintainable by using the architecture abstraction
-    layer""",
+    Add g_ prefix to can_dlc_to_len and len_to_can_dlc to
+    follow NuttX coding style conventions for global symbols,
+    improving code readability and maintainability.
+    * Fixed naming convention for global symbols
+    * Improved code consistency
+    * Enhanced maintainability""",
         "conventional": """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
     <type>[optional scope]: <description>
 
@@ -348,6 +353,39 @@ def rewrite_commit_message(
 
     This change makes error handling more idiomatic and improves debuggability
     when parsing fails.""",
+        "pr": """You are an experienced software engineer writing a pull request description for Apache NuttX RTOS:
+
+    === Required Format ===
+    Summary:
+    - Why change is necessary (fix, update, new feature)
+    - What functional part of code is being changed
+    - How change exactly works
+    - Related issue/PR references if applicable
+
+    Impact:
+    - New feature added? YES/NO (describe if yes)
+    - Impact on user? YES/NO (describe if yes)
+    - Impact on build? YES/NO (describe if yes)
+    - Impact on hardware? YES/NO (describe if yes)
+    - Impact on documentation? YES/NO (describe if yes)
+    - Impact on security? YES/NO (describe if yes)
+    - Impact on compatibility? YES/NO (describe if yes)
+
+    === Sample PR Description ===
+    Summary:
+    * Add support for new RISC-V SiFive board
+    * Implements basic GPIO and UART drivers
+    * Adds board configuration and documentation
+    * Related to issue #1234
+
+    Impact:
+    * New feature: YES - Adds new board support
+    * User impact: NO
+    * Build impact: YES - New board configs added to build system
+    * Hardware impact: YES - New RISC-V board support
+    * Documentation impact: YES - Added board documentation
+    * Security impact: NO
+    * Compatibility impact: NO""",
     }
 
     file_contents = []
