@@ -107,7 +107,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description="Rewrite git commit messages using AI")
     parser.add_argument("repo_path", help="Path to the git repository")
-    parser.add_argument("--model", default="deepseek", help="LLM model to use")
+    parser.add_argument("--model", default="deepseek-r", help="LLM model to use")
     parser.add_argument(
         "-v",
         "--verbose",
@@ -125,7 +125,10 @@ def parse_args():
     # Auto-detect model based on API endpoint
     if args.model == "deepseek":
         args.model = "openai/deepseek-chat"
+    elif args.model == "deepseek-r":
+        args.model = "openai/deepseek-reasoner"
 
+    if args.model.startswith("openai/deepseek"):
         # Configure LLM
         # deepseek
         lm.api_base = "https://api.deepseek.com/v1"
@@ -133,7 +136,6 @@ def parse_args():
         if not lm.api_key:
             print("Error: DEEPSEEK_API_KEY environment variable is not set")
             sys.exit(1)
-
     else:
         # Other models
         lm.api_base = os.getenv("OPENAI_API_BASE")
