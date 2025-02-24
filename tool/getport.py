@@ -14,7 +14,6 @@ def parse_args():
     parser.add_argument(
         "target",
         type=str,
-        choices=["esp32c3", "esp32s3", "stlink"],
         help="Target device to search for",
     )
     return parser.parse_args()
@@ -33,6 +32,9 @@ def find_device_port(target):
     DEVICE_IDS = {
         "esp32s3": [
             "303A:1001",  # USB Serial-JTAG
+        ],
+        "stm32f746g-disco": [
+            "0483:374B",  # ST-Link V2-1
         ]
     }
 
