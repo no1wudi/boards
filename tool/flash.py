@@ -27,7 +27,7 @@ FLASH_CONFIGS = {
     },
     "stm32f746g-disco": {
         "required": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO=y"],
-        "command": "openocd -f board/stm32f746g-disco.cfg -c \"program {firmware} verify reset exit 0x08000000\"",
+        "command": 'openocd -f board/stm32f746g-disco.cfg -c "program {firmware} verify reset exit 0x08000000"',
         "filename": "nuttx.bin",
         "type": "openocd",
     },
@@ -109,7 +109,9 @@ def flash_firmware(nuttx_path, port=None, python_exec=None):
     if python_exec and config["type"] == "esptool":
         base_cmd = f"{python_exec} {base_cmd}"
 
-    cmd = base_cmd.format(target=target, port=port if port else "", firmware=firmware_path)
+    cmd = base_cmd.format(
+        target=target, port=port if port else "", firmware=firmware_path
+    )
     print(f"Target: {target}")
     print(f"Running: {cmd}")
 
