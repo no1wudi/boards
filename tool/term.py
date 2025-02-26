@@ -78,15 +78,26 @@ def get_target_from_kconfig(nuttx_path):
     """
     config_path = os.path.join(nuttx_path, ".config")
     if not os.path.exists(config_path):
+        print(f"Warning: Config file not found at {config_path}")
+        return None
+
+    # Early return if config file is empty
+    if os.path.getsize(config_path) == 0:
+        print(f"Warning: Config file is empty at {config_path}")
         return None
 
     try:
         kconfig = Kconfig(config_path)
+
+        # Simple direct iteration through all targets
         for target, configs in TARGET_CONFIG_MAP.items():
             if kconfig.check_configs(configs):
                 return target
+
+    except FileNotFoundError:
+        print(f"Error: Could not open config file {config_path}")
     except Exception as e:
-        print(f"Warning: Failed to parse Kconfig: {e}")
+        print(f"Warning: Failed to parse Kconfig: {str(e)}")
 
     return None
 
