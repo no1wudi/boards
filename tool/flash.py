@@ -11,19 +11,25 @@ FLASH_CONFIGS = {
         "required": ["CONFIG_ARCH_CHIP_ESP32=y"],
         "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
         "filename": "nuttx.bin",
-        "type": "serial",
+        "type": "esptool",
     },
     "esp32c3": {
         "required": ["CONFIG_ARCH_CHIP_ESP32C3=y"],
         "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
         "filename": "nuttx.bin",
-        "type": "serial",
+        "type": "esptool",
     },
     "esp32s3": {
         "required": ["CONFIG_ARCH_CHIP_ESP32S3=y"],
         "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
         "filename": "nuttx.bin",
-        "type": "serial",
+        "type": "esptool",
+    },
+    "stm32f746g-disco": {
+        "required": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO=y"],
+        "command": "openocd -f board/stm32f746g-disco.cfg -c \"program {firmware} verify reset exit 0x08000000\"",
+        "filename": "nuttx.bin",
+        "type": "openocd",
     },
 }
 
@@ -83,12 +89,12 @@ def flash_firmware(nuttx_path, port=None, python_exec=None):
 
     config = FLASH_CONFIGS[target]
     # Only try to auto-detect port for targets with serial port type
-    if port is None and config["type"] == "serial":
+    if port is None and config["type"] == "esptool":
         port = get_device_port(python_exec, target)
         if not port:
             print("Error: Could not auto-detect port. Please specify --port")
             sys.exit(1)
-    elif port is None:
+    elif port is None and config["type"] not in ["stlink", "openocd"]:
         print(f"Error: Port must be specified for {config['type']} type targets")
         sys.exit(1)
 
@@ -98,12 +104,12 @@ def flash_firmware(nuttx_path, port=None, python_exec=None):
         print(f"Error: Firmware not found at {firmware_path}")
         sys.exit(1)
 
-    # Prepend Python executable to command if specified
+    # Prepend Python executable to command if specified and using Python-based tools
     base_cmd = config["command"]
-    if python_exec:
+    if python_exec and config["type"] == "esptool":
         base_cmd = f"{python_exec} {base_cmd}"
 
-    cmd = base_cmd.format(target=target, port=port, firmware=firmware_path)
+    cmd = base_cmd.format(target=target, port=port if port else "", firmware=firmware_path)
     print(f"Target: {target}")
     print(f"Running: {cmd}")
 
