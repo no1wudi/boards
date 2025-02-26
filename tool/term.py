@@ -41,15 +41,25 @@ def get_device_port(python_exe, target):
     getport_script = os.path.join(script_dir, "getport.py")
 
     try:
-        result = subprocess.run(
-            [python_exe, getport_script, target], capture_output=True, text=True
-        )
+        # More efficient subprocess call
+        output = subprocess.check_output(
+            [python_exe, getport_script, target], text=True, stderr=subprocess.STDOUT
+        ).strip()
 
-        print(result.stdout.strip())
-        # Extract the port from output (last line containing "Found matching device at: ")
-        for line in reversed(result.stdout.split("\n")):
+        # Print the output for debugging purposes
+        print(output)
+
+        # More efficient parsing - search directly for the port information
+        for line in output.splitlines():
             if "Found matching device at: " in line:
-                return line.split(": ")[1]
+                return line.partition(": ")[2].strip()
+
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: getport.py failed with exit code {e.returncode}")
+        if e.output:
+            print(f"Output: {e.output.strip()}")
+    except FileNotFoundError:
+        print(f"Warning: Could not find getport.py script at {getport_script}")
     except Exception as e:
         print(f"Warning: Failed to run getport.py: {e}")
 
