@@ -5,6 +5,9 @@ import sys
 import argparse
 from kconfig import Kconfig
 
+# Default OpenOCD path
+DEFAULT_OPENOCD_PATH = '/mnt/d/Develop/openocd/bin/openocd.exe'
+
 # Mapping of target flashing configurations
 FLASH_CONFIGS = {
     "esp32": {
@@ -27,7 +30,7 @@ FLASH_CONFIGS = {
     },
     "stm32f746g-disco": {
         "required": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO=y"],
-        "command": 'openocd -f board/stm32f746g-disco.cfg -c "program {firmware} verify reset exit 0x08000000"',
+        "command": '{openocd} -f board/stm32f746g-disco.cfg -c "program {firmware} verify reset exit 0x08000000"',
         "filename": "nuttx.bin",
         "type": "openocd",
     },
@@ -74,7 +77,7 @@ def get_device_port(python_exe, target):
     return None
 
 
-def flash_firmware(nuttx_path, port=None, python_exec=None):
+def flash_firmware(nuttx_path, port=None, python_exec=None, openocd_path=None):
     """
     Flash firmware based on detected target.
     """
@@ -110,7 +113,10 @@ def flash_firmware(nuttx_path, port=None, python_exec=None):
         base_cmd = f"{python_exec} {base_cmd}"
 
     cmd = base_cmd.format(
-        target=target, port=port if port else "", firmware=firmware_path
+        target=target,
+        port=port if port else "",
+        firmware=firmware_path,
+        openocd=openocd_path if openocd_path and config["type"] == "openocd" else DEFAULT_OPENOCD_PATH
     )
     print(f"Target: {target}")
     print(f"Running: {cmd}")
@@ -134,9 +140,14 @@ def main():
         help="Python executable to use (e.g., python3)",
         default=sys.executable,
     )
+    parser.add_argument(
+        "--openocd",
+        help="OpenOCD executable path",
+        default=DEFAULT_OPENOCD_PATH,
+    )
 
     args = parser.parse_args()
-    flash_firmware(args.nuttx_path, args.port, args.python)
+    flash_firmware(args.nuttx_path, args.port, args.python, args.openocd)
 
 
 if __name__ == "__main__":
