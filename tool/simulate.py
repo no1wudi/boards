@@ -24,6 +24,10 @@ TARGET_CONFIGS = {
         "required": ["CONFIG_ARCH_CHIP_IMX6_6QUAD=y", "CONFIG_SMP=y"],
         "command": "qemu-system-arm -M sabrelite -smp 4 -kernel {kernel_path} -nographic",
     },
+    "mps2-an521": {
+        "required": ["CONFIG_ARCH_BOARD_MPS2_AN521=y"],
+        "command": "qemu-system-arm -M mps2-an521 -kernel {kernel_path} -nographic",
+    },
     "mps3-an547": {
         "required": ["CONFIG_ARCH_BOARD_MPS3_AN547=y"],
         "command": "qemu-system-arm -M mps3-an547 -kernel {kernel_path} -nographic",
