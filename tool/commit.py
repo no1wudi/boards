@@ -96,6 +96,21 @@ format_prompts = {
     * Impact on documentation?: YES - Added board documentation
     * Impact on security?: NO
     * Impact on compatibility?: NO""",
+    "summary": """You are an experienced software engineer. Create a one-line summary of the following code changes.
+    The summary should:
+    - Follow the format "<module/area>: <Summary of changes>"
+    - Be concise (maximum 80 characters)
+    - Clearly state what was changed
+    - Use present tense (e.g., "Add feature" not "Added feature")
+    - Be specific about the component and action
+    - Always include the module/area prefix
+
+    === Sample Summaries ===
+    "drivers/uart: Add UART driver support for STM32H7 series"
+    "libc: Fix buffer overflow in strcpy implementation"
+    "ci: Update CI pipeline to use Python 3.10"
+    "mm/heap: Optimize memory allocation for small blocks"
+    """,
 }
 
 
