@@ -122,7 +122,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description="Rewrite git commit messages using AI")
     parser.add_argument("repo_path", help="Path to the git repository")
-    parser.add_argument("--model", default="deepseek-r", help="LLM model to use")
+    parser.add_argument("--model", default="deepseek", help="LLM model to use")
     parser.add_argument(
         "-v",
         "--verbose",
