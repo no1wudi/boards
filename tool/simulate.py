@@ -76,12 +76,13 @@ def detect_target(nuttx_path):
     return None
 
 
-def run_simulation(nuttx_path):
+def run_simulation(nuttx_path, qemu_options=None):
     """
     Run QEMU simulation based on detected target architecture.
 
     Args:
         nuttx_path (str): Path to NuttX build directory containing nuttx binary
+        qemu_options (str, optional): Additional options to pass to QEMU
 
     Raises:
         SystemExit: If target cannot be detected or simulation fails
@@ -100,6 +101,11 @@ def run_simulation(nuttx_path):
     cmd = TARGET_CONFIGS[target]["command"].format(
         kernel_path=f"{kernel_path}{file_ext}"
     )
+
+    # Append additional QEMU options if provided
+    if qemu_options:
+        cmd = f"{cmd} {qemu_options}"
+
     print(f"Target: {target}")
     print(f"Running: {cmd}")
 
@@ -118,10 +124,12 @@ def main():
         description="QEMU simulation tool for NuttX targets"
     )
     parser.add_argument("nuttx_path", help="Path to NuttX build directory")
+    parser.add_argument("--qemu-options",
+                        help="Additional options to pass to QEMU (e.g. '-S -s' for debug)")
 
     args = parser.parse_args()
     nuttx_path = os.path.abspath(args.nuttx_path)
-    run_simulation(nuttx_path)
+    run_simulation(nuttx_path, args.qemu_options)
 
 
 if __name__ == "__main__":
