@@ -13,19 +13,19 @@ DEFAULT_OPENOCD_PATH: str = "/mnt/d/Develop/openocd/bin/openocd.exe"
 FLASH_CONFIGS: Dict[str, Dict[str, Any]] = {
     "esp32": {
         "required": ["CONFIG_ARCH_CHIP_ESP32=y"],
-        "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
+        "command": "esptool --chip auto --port {port} --baud 921600 write-flash 0x0 {firmware}",
         "filename": "nuttx.bin",
         "type": "esptool",
     },
     "esp32c3": {
         "required": ["CONFIG_ARCH_CHIP_ESP32C3=y"],
-        "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
+        "command": "esptool --chip auto --port {port} --baud 921600 write-flash 0x0 {firmware}",
         "filename": "nuttx.bin",
         "type": "esptool",
     },
     "esp32s3": {
         "required": ["CONFIG_ARCH_CHIP_ESP32S3=y"],
-        "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
+        "command": "esptool --chip auto --port {port} --baud 921600 write-flash 0x0 {firmware}",
         "filename": "nuttx.bin",
         "type": "esptool",
     },
@@ -116,37 +116,32 @@ def flash_firmware(
         sys.exit(1)
 
     config = FLASH_CONFIGS[target]
-    # Only try to auto-detect port for targets with serial port type
-    if port is None and config["type"] == "esptool":
-        port = get_device_port(python_exec, target)
-        if not port:
-            print("Error: Could not auto-detect port. Please specify --port")
+
+    # Handle port detection and validation
+    if port is None:
+        if config["type"] == "esptool":
+            port = get_device_port(python_exec, target)
+            if not port:
+                print("Error: Could not auto-detect port. Please specify --port")
+                sys.exit(1)
+        elif config["type"] not in ["stlink", "openocd"]:
+            print(f"Error: Port must be specified for {config['type']} type targets")
             sys.exit(1)
-    elif port is None and config["type"] not in ["stlink", "openocd"]:
-        print(f"Error: Port must be specified for {config['type']} type targets")
-        sys.exit(1)
 
+    # Validate firmware file
     firmware_path = os.path.join(nuttx_path, config["filename"])
-
     if not os.path.exists(firmware_path):
         print(f"Error: Firmware not found at {firmware_path}")
         sys.exit(1)
 
-    # Prepend Python executable to command if specified and using Python-based tools
-    base_cmd = config["command"]
-    if python_exec and config["type"] == "esptool":
-        base_cmd = f"{python_exec} {base_cmd}"
-
-    cmd = base_cmd.format(
+    # Build command
+    cmd = config["command"].format(
         target=target,
-        port=port if port else "",
+        port=port or "",
         firmware=firmware_path,
-        openocd=(
-            openocd_path
-            if openocd_path and config["type"] == "openocd"
-            else DEFAULT_OPENOCD_PATH
-        ),
+        openocd=openocd_path or DEFAULT_OPENOCD_PATH,
     )
+
     print(f"Target: {target}")
     print(f"Running: {cmd}")
 
