@@ -2,22 +2,23 @@ import os
 import sys
 import argparse
 import shutil
+from typing import List, Tuple, Optional, Dict
 
 # Preset configurations
 
-RUST_CONFIG = [
+RUST_CONFIG: List[Tuple[str, ...]] = [
     ("enable", "CONFIG_SYSTEM_TIME64"),
     ("enable", "CONFIG_FS_LARGEFILE"),
     ("enable", "CONFIG_DEV_URANDOM"),
     ("set-val", "CONFIG_TLS_NELEM", "16"),
 ]
 
-PRESETS = {
+PRESETS: Dict[str, List[Tuple[str, ...]]] = {
     "rust": RUST_CONFIG,
 }
 
 
-def run_command(cmd):
+def run_command(cmd: str) -> None:
     """Execute a shell command and exit on failure.
 
     Args:
@@ -32,7 +33,7 @@ def run_command(cmd):
         sys.exit(1)
 
 
-def is_nuttx_configured(nuttx_path):
+def is_nuttx_configured(nuttx_path: str) -> bool:
     """Check if NuttX has been configured by looking for .config file.
 
     Args:
@@ -44,7 +45,7 @@ def is_nuttx_configured(nuttx_path):
     return os.path.exists(os.path.join(nuttx_path, ".config"))
 
 
-def configure_nuttx(nuttx_path, board_config):
+def configure_nuttx(nuttx_path: str, board_config: str) -> None:
     """Configure NuttX for a specific board.
 
     Args:
@@ -62,7 +63,7 @@ def configure_nuttx(nuttx_path, board_config):
     run_command(f"./tools/configure.sh {board_config}")
 
 
-def configure_nuttx_cmake(nuttx_path, board_config):
+def configure_nuttx_cmake(nuttx_path: str, board_config: str) -> str:
     """Configure NuttX using CMake.
 
     Args:
@@ -72,6 +73,9 @@ def configure_nuttx_cmake(nuttx_path, board_config):
     Note:
         Creates build directory at the same level as NuttX directory
         Uses Ninja as the default generator
+
+    Returns:
+        str: Path to the build directory
     """
     # Get parent directory of NuttX
     parent_dir = os.path.dirname(nuttx_path)
@@ -98,7 +102,7 @@ def configure_nuttx_cmake(nuttx_path, board_config):
     return build_dir
 
 
-def apply_presets(nuttx_path, presets):
+def apply_presets(nuttx_path: str, presets: List[str]) -> None:
     """Apply configuration presets using kconfig-tweak.
 
     Args:
@@ -137,7 +141,7 @@ def apply_presets(nuttx_path, presets):
     run_command("make olddefconfig")
 
 
-def apply_presets_cmake(build_dir, presets):
+def apply_presets_cmake(build_dir: str, presets: List[str]) -> None:
     """Apply configuration presets using CMake build directory.
 
     Args:
@@ -175,7 +179,7 @@ def apply_presets_cmake(build_dir, presets):
             run_command(cmd)
 
 
-def generate_clangd_config(nuttx_path, config_path=None):
+def generate_clangd_config(nuttx_path: str, config_path: Optional[str] = None) -> None:
     """Generate .clangd configuration file for better IDE support.
 
     Args:
@@ -198,7 +202,7 @@ def generate_clangd_config(nuttx_path, config_path=None):
     target = "thumbv7m"
 
     # Mapping of configuration to target
-    config_to_target = {
+    config_to_target: Dict[str, str] = {
         "CONFIG_ARCH_XTENSA": "xtensa",
         "CONFIG_ARCH_SIM": "x86_64",
         "CONFIG_SIM_M32": "i686",
@@ -243,7 +247,7 @@ CompileFlags:
         f.write(clangd_config)
 
 
-def main():
+def main() -> None:
     """Main entry point for NuttX configuration tool.
 
     Handles command line arguments and orchestrates:

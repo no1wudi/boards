@@ -1,3 +1,6 @@
+from typing import List, Optional
+
+
 class Kconfig:
     """
     A parser for Kconfig configuration files.
@@ -8,20 +11,21 @@ class Kconfig:
 
     Private Attributes:
         _config_path (str): Path to the .config file
-        _config_lines (list): Content of the config file
+        _config_lines (str): Content of the config file
 
     Example:
         kconfig = Kconfig("/path/to/.config")
         if kconfig.has_config("CONFIG_EXAMPLE"):
             print("Configuration found")
     """
-    def __init__(self, config_path):
+
+    def __init__(self, config_path: str):
         """Initialize Kconfig parser with path to .config file."""
         self._config_path = config_path
         self._config_lines = []
         self._read_config()
 
-    def _read_config(self):
+    def _read_config(self) -> None:
         """Read and store configuration from .config file."""
         try:
             with open(self._config_path, "r") as f:
@@ -29,15 +33,15 @@ class Kconfig:
         except FileNotFoundError:
             raise FileNotFoundError(f"Config file not found: {self._config_path}")
 
-    def has_config(self, config):
+    def has_config(self, config: str) -> bool:
         """Check if a specific configuration exists."""
         return config in self._config_lines
 
-    def check_configs(self, required_configs):
+    def check_configs(self, required_configs: List[str]) -> bool:
         """Check if all required configurations are present."""
         return all(self.has_config(config) for config in required_configs)
 
-    def get_value(self, config_name):
+    def get_value(self, config_name: str) -> Optional[str]:
         """
         Get the value of a configuration option.
 
@@ -54,7 +58,7 @@ class Kconfig:
 
         for line in self._config_lines.splitlines():
             line = line.strip()
-            if line.startswith(config_name + '='):
-                value = line.split('=', 1)[1]
+            if line.startswith(config_name + "="):
+                value = line.split("=", 1)[1]
                 return value
         return None

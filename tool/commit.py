@@ -3,12 +3,13 @@ import subprocess
 import sys
 import os
 import argparse
+from typing import List, Tuple, Optional, Dict, Any
 
 # Maximum total size of files to include in commit message analysis
-MAX_FILE_SIZE_KB = 50
+MAX_FILE_SIZE_KB: int = 50
 
 # Format prompts for different commit message styles
-format_prompts = {
+format_prompts: Dict[str, str] = {
     "nuttx": """You are an experienced software engineer writing a commit message following the Apache NuttX RTOS format:
     <functional_context>: <topic>
 
@@ -114,7 +115,7 @@ format_prompts = {
 }
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """Parse command line arguments.
 
     Returns:
@@ -163,7 +164,7 @@ class Git:
     def __init__(self, repo_path):
         self.repo_path = self.get_repo_path(repo_path)
 
-    def get_repo_path(self, path):
+    def get_repo_path(self, path: str) -> str:
         """Validate and get absolute path to git repository.
 
         Args:
@@ -184,7 +185,7 @@ class Git:
             sys.exit(1)
         return repo_path
 
-    def check_repo_clean(self):
+    def check_repo_clean(self) -> None:
         """Check if git repository has uncommitted changes.
 
         Raises:
@@ -208,7 +209,7 @@ class Git:
             print("Error: Failed to check repository status")
             sys.exit(1)
 
-    def get_branch_info(self):
+    def get_branch_info(self) -> Tuple[str, str]:
         """Get current branch name and latest commit ID.
 
         Returns:
@@ -241,7 +242,7 @@ class Git:
             print("Error: Failed to get branch info")
             sys.exit(1)
 
-    def get_modified_files(self):
+    def get_modified_files(self) -> List[str]:
         """Get list of files changed in the last commit.
 
         Returns:
@@ -264,7 +265,7 @@ class Git:
             print("Error: Failed to get modified files")
             sys.exit(1)
 
-    def get_file_contents(self, file_paths):
+    def get_file_contents(self, file_paths: List[str]) -> List[Tuple[str, str]]:
         """Get the contents of multiple files in the repository if they're not too large.
 
         Args:
@@ -314,7 +315,7 @@ class Git:
 
         return results
 
-    def get_current_commit_message(self):
+    def get_current_commit_message(self) -> Tuple[str, str]:
         """Get the most recent commit message from the repository.
 
         Returns:
@@ -347,7 +348,7 @@ class Git:
             print("Error: Failed to get commit message")
             sys.exit(1)
 
-    def get_commit_diff(self):
+    def get_commit_diff(self) -> str:
         """Get diff of the last commit.
 
         Returns:
@@ -368,7 +369,7 @@ class Git:
             print("Error: Failed to get commit diff")
             sys.exit(1)
 
-    def update_commit_message(self, new_message):
+    def update_commit_message(self, new_message: str) -> None:
         """Update the most recent commit with the new message.
 
         Args:
@@ -390,8 +391,14 @@ class Git:
 
 
 def rewrite_commit_message(
-    title, original_message, model, git, modified_files, verbose=False, format="nuttx"
-):
+    title: str,
+    original_message: str,
+    model: str,
+    git: "Git",
+    modified_files: List[str],
+    verbose: bool = False,
+    format: str = "nuttx",
+) -> str:
     """Use AI to rewrite a commit message while preserving the title.
 
     Args:
@@ -450,8 +457,13 @@ def rewrite_commit_message(
 
 
 def write_pr_message(
-    title, original_message, model, git, modified_files, verbose=False
-):
+    title: str,
+    original_message: str,
+    model: str,
+    git: "Git",
+    modified_files: List[str],
+    verbose: bool = False,
+) -> str:
     """Use AI to write a PR description.
 
     Args:
@@ -506,7 +518,7 @@ def write_pr_message(
     return response.choices[0].message.content.strip()
 
 
-def preview_changes(original_message, new_message):
+def preview_changes(original_message: str, new_message: str) -> bool:
     """Show diff between original and new message and prompt for confirmation.
 
     Args:

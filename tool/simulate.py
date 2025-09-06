@@ -3,10 +3,11 @@ import os
 import subprocess
 import sys
 import argparse
+from typing import Dict, List, Optional, Any
 from kconfig import Kconfig
 
 # Mapping of target detection rules to QEMU commands
-TARGET_CONFIGS = {
+TARGET_CONFIGS: Dict[str, Dict[str, Any]] = {
     # Format: {target_name: {'required': [configs], 'optional': [configs], 'command': qemu_cmd, 'file_ext': file_extension}}
     "qemu-rv32": {
         "required": ["CONFIG_ARCH_BOARD_QEMU_RV_VIRT=y", "CONFIG_ARCH_RV32=y"],
@@ -48,7 +49,7 @@ TARGET_CONFIGS = {
 }
 
 
-def detect_target(nuttx_path):
+def detect_target(nuttx_path: str) -> Optional[str]:
     """
     Detect target architecture from NuttX .config file.
 
@@ -76,7 +77,7 @@ def detect_target(nuttx_path):
     return None
 
 
-def run_simulation(nuttx_path, qemu_options=None):
+def run_simulation(nuttx_path: str, qemu_options: Optional[str] = None) -> None:
     """
     Run QEMU simulation based on detected target architecture.
 
@@ -116,7 +117,7 @@ def run_simulation(nuttx_path, qemu_options=None):
         sys.exit(1)
 
 
-def main():
+def main() -> None:
     """
     Main entry point for the simulation tool.
     """
@@ -124,8 +125,10 @@ def main():
         description="QEMU simulation tool for NuttX targets"
     )
     parser.add_argument("nuttx_path", help="Path to NuttX build directory")
-    parser.add_argument("--qemu-options",
-                        help="Additional options to pass to QEMU (e.g. '-S -s' for debug)")
+    parser.add_argument(
+        "--qemu-options",
+        help="Additional options to pass to QEMU (e.g. '-S -s' for debug)",
+    )
 
     args = parser.parse_args()
     nuttx_path = os.path.abspath(args.nuttx_path)

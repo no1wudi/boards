@@ -3,13 +3,14 @@ import os
 import subprocess
 import sys
 import argparse
+from typing import Dict, List, Optional, Any
 from kconfig import Kconfig
 
 # Default OpenOCD path
-DEFAULT_OPENOCD_PATH = '/mnt/d/Develop/openocd/bin/openocd.exe'
+DEFAULT_OPENOCD_PATH: str = "/mnt/d/Develop/openocd/bin/openocd.exe"
 
 # Mapping of target flashing configurations
-FLASH_CONFIGS = {
+FLASH_CONFIGS: Dict[str, Dict[str, Any]] = {
     "esp32": {
         "required": ["CONFIG_ARCH_CHIP_ESP32=y"],
         "command": "-m esptool --chip auto --port {port} --baud 921600 write_flash 0x0 {firmware}",
@@ -37,9 +38,15 @@ FLASH_CONFIGS = {
 }
 
 
-def detect_target(nuttx_path):
+def detect_target(nuttx_path: str) -> Optional[str]:
     """
     Detect target from NuttX .config file.
+
+    Args:
+        nuttx_path: Path to NuttX directory
+
+    Returns:
+        Target name if detected, None otherwise
     """
     config_path = os.path.join(nuttx_path, ".config")
 
@@ -55,9 +62,16 @@ def detect_target(nuttx_path):
     return None
 
 
-def get_device_port(python_exe, target):
+def get_device_port(python_exe: str, target: str) -> Optional[str]:
     """
     Find the serial port for a specific target device.
+
+    Args:
+        python_exe: Path to Python executable
+        target: Target device name
+
+    Returns:
+        Device port path if found, None otherwise
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     getport_script = os.path.join(script_dir, "getport.py")
@@ -77,9 +91,20 @@ def get_device_port(python_exe, target):
     return None
 
 
-def flash_firmware(nuttx_path, port=None, python_exec=None, openocd_path=None):
+def flash_firmware(
+    nuttx_path: str,
+    port: Optional[str] = None,
+    python_exec: Optional[str] = None,
+    openocd_path: Optional[str] = None,
+) -> None:
     """
     Flash firmware based on detected target.
+
+    Args:
+        nuttx_path: Path to NuttX directory
+        port: Serial port for flashing
+        python_exec: Python executable path
+        openocd_path: OpenOCD executable path
     """
     target = detect_target(nuttx_path)
     if not target:
@@ -116,7 +141,11 @@ def flash_firmware(nuttx_path, port=None, python_exec=None, openocd_path=None):
         target=target,
         port=port if port else "",
         firmware=firmware_path,
-        openocd=openocd_path if openocd_path and config["type"] == "openocd" else DEFAULT_OPENOCD_PATH
+        openocd=(
+            openocd_path
+            if openocd_path and config["type"] == "openocd"
+            else DEFAULT_OPENOCD_PATH
+        ),
     )
     print(f"Target: {target}")
     print(f"Running: {cmd}")
@@ -128,7 +157,7 @@ def flash_firmware(nuttx_path, port=None, python_exec=None, openocd_path=None):
         sys.exit(1)
 
 
-def main():
+def main() -> None:
     """
     Main entry point for the flashing tool.
     """

@@ -1,8 +1,9 @@
 import serial.tools.list_ports
 import argparse
+from typing import Optional, Dict, List
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """Parse command line arguments.
 
     Returns:
@@ -19,7 +20,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def find_device_port(target):
+def find_device_port(target: str) -> Optional[str]:
     """Find the serial port for a specific device.
 
     Args:
@@ -29,13 +30,13 @@ def find_device_port(target):
         str or None: Device port path if found, None otherwise.
     """
     # VID:PID combinations
-    DEVICE_IDS = {
+    DEVICE_IDS: Dict[str, List[str]] = {
         "esp32s3": [
             "303A:1001",  # USB Serial-JTAG
         ],
         "stm32f746g-disco": [
             "0483:374B",  # ST-Link V2-1
-        ]
+        ],
     }
 
     if target not in DEVICE_IDS:
@@ -62,7 +63,7 @@ def find_device_port(target):
     return None
 
 
-def main():
+def main() -> None:
     """Main entry point of the script.
 
     Returns:

@@ -4,17 +4,18 @@ import sys
 import os
 import argparse
 import subprocess
+from typing import Dict, List, Optional, Any
 from kconfig import Kconfig
 
 # Add this mapping at module level
-TARGET_CONFIG_MAP = {
+TARGET_CONFIG_MAP: Dict[str, List[str]] = {
     "esp32c3": ["CONFIG_ARCH_CHIP_ESP32C3=y"],
     "esp32s3": ["CONFIG_ARCH_CHIP_ESP32S3=y"],
     "stm32f746g-disco": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO=y"],
 }
 
 # Add this map after TARGET_CONFIG_MAP
-BAUDRATE_CONFIG_MAP = {
+BAUDRATE_CONFIG_MAP: Dict[str, Dict[str, Any]] = {
     "esp32s3": {
         "configs": ["CONFIG_OTHER_SERIAL_CONSOLE=y", "CONFIG_ESP32S3_USBSERIAL=y"],
         "baudrate": 2000000,
@@ -26,7 +27,7 @@ BAUDRATE_CONFIG_MAP = {
 }
 
 
-def get_device_port(python_exe, target):
+def get_device_port(python_exe: str, target: str) -> Optional[str]:
     """
     Find the serial port for a specific target device.
 
@@ -66,7 +67,7 @@ def get_device_port(python_exe, target):
     return None
 
 
-def get_target_from_kconfig(nuttx_path):
+def get_target_from_kconfig(nuttx_path: str) -> Optional[str]:
     """
     Parse NuttX .config file to determine target device.
 
@@ -102,7 +103,7 @@ def get_target_from_kconfig(nuttx_path):
     return None
 
 
-def get_baudrate_from_kconfig(nuttx_path, target):
+def get_baudrate_from_kconfig(nuttx_path: str, target: Optional[str]) -> int:
     """
     Get serial baud rate from Kconfig settings.
 
@@ -143,7 +144,7 @@ def get_baudrate_from_kconfig(nuttx_path, target):
     return 115200  # default fallback
 
 
-def main():
+def main() -> None:
     """
     Main entry point for the serial terminal utility.
 
