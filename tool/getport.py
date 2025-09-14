@@ -33,6 +33,7 @@ def find_device_port(target: str) -> Optional[str]:
     DEVICE_IDS: Dict[str, List[str]] = {
         "esp32s3": [
             "303A:1001",  # USB Serial-JTAG
+            "1A86:7522",  # CH340
         ],
         "stm32f746g-disco": [
             "0483:374B",  # ST-Link V2-1

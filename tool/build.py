@@ -53,8 +53,10 @@ def build_with_make(nuttx_path: str, target: str = "all") -> None:
         print("Error: NuttX is not configured. Run configure first.")
         sys.exit(1)
 
-    print(f"Building with Make, target: {target}")
-    run_command(f"make {target}")
+    # Use multiple jobs for parallel build
+    num_jobs = os.cpu_count() or 1
+    print(f"Building with Make, target: {target}, jobs: {num_jobs}")
+    run_command(f"make {target} -j{num_jobs}")
 
 
 def build_with_cmake(nuttx_path: str) -> None:
