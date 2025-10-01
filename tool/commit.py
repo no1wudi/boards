@@ -1,9 +1,17 @@
-import litellm as lm
+"""AI-powered commit message rewriting for NuttX."""
+
+import argparse
+import os
 import subprocess
 import sys
-import os
-import argparse
-from typing import List, Tuple, Optional, Dict, Any
+from typing import List, Tuple, Dict
+
+try:
+    import litellm as lm
+
+    HAS_LITELLM = True
+except ImportError:
+    HAS_LITELLM = False
 
 # Maximum total size of files to include in commit message analysis
 MAX_FILE_SIZE_KB: int = 50
@@ -115,53 +123,8 @@ format_prompts: Dict[str, str] = {
 }
 
 
-def parse_args() -> argparse.Namespace:
-    """Parse command line arguments.
-
-    Returns:
-        argparse.Namespace: Parsed arguments with repo_path and model
-    """
-    parser = argparse.ArgumentParser(description="Rewrite git commit messages using AI")
-    parser.add_argument("repo_path", help="Path to the git repository")
-    parser.add_argument("--model", default="deepseek", help="LLM model to use")
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Enable verbose output for debugging",
-    )
-    parser.add_argument(
-        "--format",
-        default="nuttx",
-        choices=["nuttx", "common", "rust", "pr"],
-        help="Commit message format style",
-    )
-    args = parser.parse_args()
-
-    # Auto-detect model based on API endpoint
-    if args.model == "deepseek":
-        args.model = "openai/deepseek-chat"
-    elif args.model == "deepseek-r":
-        args.model = "openai/deepseek-reasoner"
-
-    if args.model.startswith("openai/deepseek"):
-        # Configure LLM
-        # deepseek
-        lm.api_base = "https://api.deepseek.com/v1"
-        lm.api_key = os.getenv("DEEPSEEK_API_KEY")
-        if not lm.api_key:
-            print("Error: DEEPSEEK_API_KEY environment variable is not set")
-            sys.exit(1)
-    else:
-        # Other models
-        lm.api_base = os.getenv("OPENAI_API_BASE")
-        lm.api_key = os.getenv("OPENAI_API_KEY")
-
-    return args
-
-
 class Git:
-    def __init__(self, repo_path):
+    def __init__(self, repo_path: str):
         self.repo_path = self.get_repo_path(repo_path)
 
     def get_repo_path(self, path: str) -> str:
@@ -279,14 +242,12 @@ class Git:
         """
         # First get sizes of all files
         file_sizes = []
-        for file_path in file_paths:
+        for file_path in file_paths[:]:  # Use slice to avoid modifying list during iteration
             try:
                 size = os.path.getsize(os.path.join(self.repo_path, file_path))
                 file_sizes.append((file_path, size))
             except IOError:
                 print(f"Warning: Failed to read file: {file_path}")
-                # Remove file from file_paths list
-                file_paths.remove(file_path)
 
         # Calculate total size
         total_size = sum(size for _, size in file_sizes)
@@ -299,10 +260,7 @@ class Git:
             while total_size > MAX_FILE_SIZE_KB * 1024 and file_sizes:
                 removed_file, removed_size = file_sizes.pop(0)
                 total_size -= removed_size
-                print(
-                    f"Omitting large file: {
-                      removed_file} ({removed_size} bytes)"
-                )
+                print(f"Omitting large file: {removed_file} ({removed_size} bytes)")
 
         # Now read remaining files
         results = []
@@ -541,9 +499,43 @@ def preview_changes(original_message: str, new_message: str) -> bool:
             return response != "n"
 
 
-if __name__ == "__main__":
-    args = parse_args()
-    git = Git(args.repo_path)
+def commit(
+    repo_path: str,
+    model: str = "deepseek",
+    verbose: bool = False,
+    format: str = "nuttx",
+) -> None:
+    """Rewrite git commit messages using AI.
+
+    Args:
+        repo_path: Path to the git repository
+        model: LLM model to use
+        verbose: Enable verbose output for debugging
+        format: Commit message format style
+    """
+    if not HAS_LITELLM:
+        print("Error: litellm module not found. Install with: pip install litellm")
+        sys.exit(1)
+
+    # Auto-detect model based on API endpoint
+    if model == "deepseek":
+        model = "openai/deepseek-chat"
+    elif model == "deepseek-r":
+        model = "openai/deepseek-reasoner"
+
+    if model.startswith("openai/deepseek"):
+        # Configure LLM
+        lm.api_base = "https://api.deepseek.com/v1"
+        lm.api_key = os.getenv("DEEPSEEK_API_KEY")
+        if not lm.api_key:
+            print("Error: DEEPSEEK_API_KEY environment variable is not set")
+            sys.exit(1)
+    else:
+        # Other models
+        lm.api_base = os.getenv("OPENAI_API_BASE")
+        lm.api_key = os.getenv("OPENAI_API_KEY")
+
+    git = Git(repo_path)
     git.check_repo_clean()
 
     branch_name, commit_id = git.get_branch_info()
@@ -557,27 +549,65 @@ if __name__ == "__main__":
     print(original_message)
     print()
 
-    if args.format == "pr":
+    if format == "pr":
         new_message = write_pr_message(
             title,
             original_message,
-            args.model,
+            model,
             git,
             modified_files,
-            args.verbose,
+            verbose,
         )
     else:
         new_message = rewrite_commit_message(
             title,
             original_message,
-            args.model,
+            model,
             git,
             modified_files,
-            args.verbose,
-            args.format,
+            verbose,
+            format,
         )
 
     if preview_changes(original_message, new_message):
         git.update_commit_message(new_message)
     else:
         print("Changes discarded")
+
+
+def main() -> None:
+    """Main entry point for the commit tool."""
+    parser = argparse.ArgumentParser(
+        description="AI-powered commit message rewriting for NuttX"
+    )
+    parser.add_argument(
+        "repo_path",
+        nargs="?",
+        default=".",
+        help="Path to git repository (default: current directory)",
+    )
+    parser.add_argument(
+        "--model",
+        default="deepseek",
+        choices=["deepseek", "deepseek-r", "gpt-4", "gpt-3.5-turbo"],
+        help="LLM model to use (default: deepseek)",
+    )
+    parser.add_argument(
+        "--format",
+        default="nuttx",
+        choices=["nuttx", "conventional", "rust", "pr", "summary"],
+        help="Commit message format style (default: nuttx)",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose output for debugging",
+    )
+
+    args = parser.parse_args()
+
+    commit(args.repo_path, args.model, args.verbose, args.format)
+
+
+if __name__ == "__main__":
+    main()

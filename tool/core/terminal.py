@@ -1,27 +1,27 @@
-#!/usr/bin/env python3
+"""Serial terminal functionality for NuttX boards."""
 
-import sys
 import os
-import argparse
 import subprocess
+import sys
 from typing import Dict, List, Optional, Any
-from kconfig import Kconfig
+from utils.helpers import validate_path
+from utils.kconfig import Kconfig
 
 # Add this mapping at module level
 TARGET_CONFIG_MAP: Dict[str, List[str]] = {
-    "esp32c3": ["CONFIG_ARCH_CHIP_ESP32C3=y"],
-    "esp32s3": ["CONFIG_ARCH_CHIP_ESP32S3=y"],
-    "stm32f746g-disco": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO=y"],
+    "esp32c3": ["CONFIG_ARCH_CHIP_ESP32C3 = y"],
+    "esp32s3": ["CONFIG_ARCH_CHIP_ESP32S3 = y"],
+    "stm32f746g - disco": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO = y"],
 }
 
 # Add this map after TARGET_CONFIG_MAP
 BAUDRATE_CONFIG_MAP: Dict[str, Dict[str, Any]] = {
     "esp32s3": {
-        "configs": ["CONFIG_OTHER_SERIAL_CONSOLE=y", "CONFIG_ESP32S3_USBSERIAL=y"],
+        "configs": ["CONFIG_OTHER_SERIAL_CONSOLE = y", "CONFIG_ESP32S3_USBSERIAL = y"],
         "baudrate": 2000000,
     },
-    "stm32f746g-disco": {
-        "configs": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO=y"],
+    "stm32f746g - disco": {
+        "configs": ["CONFIG_ARCH_BOARD_STM32F746G_DISCO = y"],
         "baudrate": 115200,
     },
 }
@@ -31,15 +31,15 @@ def get_device_port(python_exe: str, target: str) -> Optional[str]:
     """
     Find the serial port for a specific target device.
 
-    Args:
-        python_exe (str): Path to Python interpreter
-        target (str): Target device identifier (e.g., 'esp32c3', 'esp32s3')
+        Args:
+            python_exe(str): Path to Python interpreter
+            target(str): Target device identifier(e.g., 'esp32c3', 'esp32s3')
 
-    Returns:
-        str or None: Device port path if found, None otherwise
+        Returns:
+            str or None: Device port path if found, None otherwise
     """
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    getport_script = os.path.join(script_dir, "getport.py")
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    getport_script = os.path.join(script_dir, "..", "getport.py")
 
     try:
         # More efficient subprocess call
@@ -71,11 +71,11 @@ def get_target_from_kconfig(nuttx_path: str) -> Optional[str]:
     """
     Parse NuttX .config file to determine target device.
 
-    Args:
-        nuttx_path (str): Path to NuttX build directory containing .config
+        Args:
+            nuttx_path(str): Path to NuttX build directory containing .config
 
-    Returns:
-        str or None: Target identifier if found, None otherwise
+        Returns:
+            str or None: Target identifier if found, None otherwise
     """
     config_path = os.path.join(nuttx_path, ".config")
     if not os.path.exists(config_path):
@@ -107,12 +107,12 @@ def get_baudrate_from_kconfig(nuttx_path: str, target: Optional[str]) -> int:
     """
     Get serial baud rate from Kconfig settings.
 
-    Args:
-        nuttx_path (str): Path to NuttX build directory
-        target (str): Target device identifier
+        Args:
+            nuttx_path(str): Path to NuttX build directory
+            target(str): Target device identifier
 
-    Returns:
-        int: Baud rate value (default 115200 if invalid)
+        Returns:
+            int: Baud rate value(default 115200 if invalid)
     """
     config_path = os.path.join(nuttx_path, ".config")
     if not os.path.exists(config_path):
@@ -144,40 +144,28 @@ def get_baudrate_from_kconfig(nuttx_path: str, target: Optional[str]) -> int:
     return 115200  # default fallback
 
 
-def main() -> None:
+def terminal(
+    nuttx_path: str, port: Optional[str] = None, python: str = sys.executable
+) -> None:
     """
-    Main entry point for the serial terminal utility.
+    Launch serial terminal with auto port detection.
 
-    Parses command line arguments, detects target device and port,
-    and launches serial terminal with appropriate settings.
+        Args:
+            nuttx_path: Path to NuttX build directory
+            port: Specific port to use(optional)
+            python: Python executable
     """
-    parser = argparse.ArgumentParser(
-        description="Serial terminal with auto port detection"
-    )
-    parser.add_argument("nuttx_path", help="Path to NuttX build directory")
-    parser.add_argument(
-        "--port", "-p", help="Specific port to use (optional)", required=False
-    )
-    parser.add_argument(
-        "--python",
-        help="Python executable",
-        default=sys.executable,
-    )
-    args = parser.parse_args()
+    nuttx_path = validate_path(nuttx_path)
 
-    port = args.port
-    target = get_target_from_kconfig(args.nuttx_path)
+    target = get_target_from_kconfig(nuttx_path)
     if not port and target:
-        port = get_device_port(args.python, target)
+        port = get_device_port(python, target)
 
     if not port:
-        print("Error: Could not determine port. Please specify --port")
+        print("Error: Could not determine port. Please specify - -port")
         sys.exit(1)
 
-    baudrate = get_baudrate_from_kconfig(args.nuttx_path, target)
-    cmd = f"{args.python} -m serial.tools.miniterm --raw --eol CR {port} {baudrate}"
+    baudrate = get_baudrate_from_kconfig(nuttx_path, target)
+    cmd = f"{python} -m serial.tools.miniterm - -raw - -eol CR {port} {baudrate}"
+    print(f"Starting terminal: {cmd}")
     os.system(cmd)
-
-
-if __name__ == "__main__":
-    main()

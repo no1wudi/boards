@@ -1,48 +1,48 @@
-import serial.tools.list_ports
-import argparse
-from typing import Optional, Dict, List
+from typing import Optional
 
+try:
+    import serial.tools.list_ports
 
-def parse_args() -> argparse.Namespace:
-    """Parse command line arguments.
-
-    Returns:
-        argparse.Namespace: Parsed command line arguments containing the target device.
-    """
-    parser = argparse.ArgumentParser(
-        description="Find serial port for specific devices"
-    )
-    parser.add_argument(
-        "target",
-        type=str,
-        help="Target device to search for",
-    )
-    return parser.parse_args()
+    HAS_SERIAL = True
+except ImportError:
+    HAS_SERIAL = False
 
 
 def find_device_port(target: str) -> Optional[str]:
-    """Find the serial port for a specific device.
-
-    Args:
-        target (str): The target device to search for (esp32c3, esp32s3, or stlink).
-
-    Returns:
-        str or None: Device port path if found, None otherwise.
     """
-    # VID:PID combinations
-    DEVICE_IDS: Dict[str, List[str]] = {
-        "esp32s3": [
-            "303A:1001",  # USB Serial-JTAG
-            "1A86:7522",  # CH340
-        ],
-        "stm32f746g-disco": [
-            "0483:374B",  # ST-Link V2-1
-        ],
-    }
+    Find the serial port for a specific device.
 
-    if target not in DEVICE_IDS:
-        print(f"Error: Unsupported target: {target}")
+        Args:
+            target(str): The target device to search for(esp32c3, esp32s3, or stlink).
+
+        Returns:
+            Optional[str]: The serial port path if found, None otherwise.
+    """
+    if not HAS_SERIAL:
+        print("Error: pyserial module not found. Install with: pip install pyserial")
         return None
+
+    ports = list(serial.tools.list_ports.comports())
+
+    if not ports:
+        print("Error: No serial ports found")
+        return None
+
+    for port in ports:
+        port_name = port.device
+        port_info = port.description or ""
+
+        if target.lower() == "esp32c3":
+            if "CP210" in port_info or "Silicon Labs" in port_info:
+                return port_name
+        elif target.lower() == "esp32s3":
+            if "CP210" in port_info or "Silicon Labs" in port_info:
+                return port_name
+        elif target.lower() == "stlink":
+            if "STLink" in port_info:
+                return port_name
+
+    return None
 
     ports = list(serial.tools.list_ports.comports())
     if not ports:
@@ -50,7 +50,7 @@ def find_device_port(target: str) -> Optional[str]:
         return None
 
     for port in ports:
-        # Skip ports without VID/PID
+        # Skip ports without VID / PID
         if port.vid is None or port.pid is None:
             continue
 
@@ -62,17 +62,3 @@ def find_device_port(target: str) -> Optional[str]:
 
     print(f"Error: No {target} device found")
     return None
-
-
-def main() -> None:
-    """Main entry point of the script.
-
-    Returns:
-        int: 0 if device port was found, 1 otherwise.
-    """
-    args = parse_args()
-    find_device_port(args.target.lower())
-
-
-if __name__ == "__main__":
-    main()

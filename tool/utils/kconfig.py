@@ -1,3 +1,6 @@
+"""
+Kconfig parsing utilities for NuttX."""
+
 from typing import List, Optional
 
 
@@ -10,23 +13,25 @@ class Kconfig:
     configurations and validating required configuration options.
 
     Private Attributes:
-        _config_path (str): Path to the .config file
-        _config_lines (str): Content of the config file
+        _config_path(str): Path to the .config file
+        _config_lines(str): Content of the config file
 
     Example:
-        kconfig = Kconfig("/path/to/.config")
+        kconfig = Kconfig("/path / to / .config")
         if kconfig.has_config("CONFIG_EXAMPLE"):
             print("Configuration found")
     """
 
     def __init__(self, config_path: str):
-        """Initialize Kconfig parser with path to .config file."""
+        """
+        Initialize Kconfig parser with path to .config file."""
         self._config_path = config_path
         self._config_lines = []
         self._read_config()
 
     def _read_config(self) -> None:
-        """Read and store configuration from .config file."""
+        """
+        Read and store configuration from .config file."""
         try:
             with open(self._config_path, "r") as f:
                 self._config_lines = f.read()
@@ -34,11 +39,13 @@ class Kconfig:
             raise FileNotFoundError(f"Config file not found: {self._config_path}")
 
     def has_config(self, config: str) -> bool:
-        """Check if a specific configuration exists."""
+        """
+        Check if a specific configuration exists."""
         return config in self._config_lines
 
     def check_configs(self, required_configs: List[str]) -> bool:
-        """Check if all required configurations are present."""
+        """
+        Check if all required configurations are present."""
         return all(self.has_config(config) for config in required_configs)
 
     def get_value(self, config_name: str) -> Optional[str]:
@@ -46,12 +53,12 @@ class Kconfig:
         Get the value of a configuration option.
 
         Args:
-            config_name (str): Name of the configuration option (e.g. CONFIG_UART0_BAUD)
+            config_name(str): Name of the configuration option(e.g. CONFIG_UART0_BAUD)
 
         Returns:
             str or None: The value of the config if found, None otherwise
-            For boolean configs (CONFIG_XXX=y), returns 'y'
-            For numeric/string configs (CONFIG_XXX=123), returns the value after '='
+            For boolean configs(CONFIG_XXX = y), returns 'y'
+            For numeric / string configs(CONFIG_XXX = 123), returns the value after '='
         """
         if not isinstance(self._config_lines, str):
             return None

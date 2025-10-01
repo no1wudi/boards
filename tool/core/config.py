@@ -1,11 +1,12 @@
+"""Configuration functionality for NuttX projects."""
+
 import os
-import sys
-import argparse
 import shutil
+import sys
 from typing import List, Tuple, Optional, Dict
+from utils.helpers import run_command, validate_path
 
 # Preset configurations
-
 RUST_CONFIG: List[Tuple[str, ...]] = [
     ("enable", "CONFIG_SYSTEM_TIME64"),
     ("enable", "CONFIG_FS_LARGEFILE"),
@@ -18,64 +19,52 @@ PRESETS: Dict[str, List[Tuple[str, ...]]] = {
 }
 
 
-def run_command(cmd: str) -> None:
-    """Execute a shell command and exit on failure.
-
-    Args:
-        cmd (str): The shell command to execute
-
-    Raises:
-        SystemExit: If the command fails (non-zero return code)
-    """
-    ret = os.system(cmd)
-    if ret != 0:
-        print(f"Error executing command: {cmd}")
-        sys.exit(1)
-
-
 def is_nuttx_configured(nuttx_path: str) -> bool:
-    """Check if NuttX has been configured by looking for .config file.
+    """
+    Check if NuttX has been configured by looking for .config file.
 
-    Args:
-        nuttx_path (str): Path to NuttX directory
+        Args:
+            nuttx_path(str): Path to NuttX directory
 
-    Returns:
-        bool: True if .config exists, False otherwise
+        Returns:
+            bool: True if .config exists, False otherwise
     """
     return os.path.exists(os.path.join(nuttx_path, ".config"))
 
 
 def configure_nuttx(nuttx_path: str, board_config: str) -> None:
-    """Configure NuttX for a specific board.
+    """
+    Configure NuttX for a specific board using configure.sh.
 
-    Args:
-        nuttx_path (str): Path to NuttX directory
-        board_config (str): Board configuration string for configure.sh
+        Args:
+            nuttx_path(str): Path to NuttX directory
+            board_config(str): Board configuration string for configure.sh
 
-    Note:
-        Runs 'make distclean' if NuttX is already configured
+        Note:
+            Runs 'make distclean' if NuttX is already configured
     """
     os.chdir(nuttx_path)
     if is_nuttx_configured(nuttx_path):
         print("NuttX already configured, running distclean")
         run_command("make distclean")
 
-    run_command(f"./tools/configure.sh -S {board_config}")
+    run_command(f"./tools / configure.sh-S {board_config}")
 
 
 def configure_nuttx_cmake(nuttx_path: str, board_config: str) -> str:
-    """Configure NuttX using CMake.
+    """
+    Configure NuttX using CMake.
 
-    Args:
-        nuttx_path (str): Path to NuttX directory
-        board_config (str): Board configuration string for CMake
+        Args:
+            nuttx_path(str): Path to NuttX directory
+            board_config(str): Board configuration string for CMake
 
-    Note:
-        Creates build directory at the same level as NuttX directory
-        Uses Ninja as the default generator
+        Note:
+            Creates build directory at the same level as NuttX directory
+            Uses Ninja as the default generator
 
-    Returns:
-        str: Path to the build directory
+        Returns:
+            str: Path to the build directory
     """
     # Get parent directory of NuttX
     parent_dir = os.path.dirname(nuttx_path)
@@ -95,7 +84,7 @@ def configure_nuttx_cmake(nuttx_path: str, board_config: str) -> str:
     os.chdir(parent_dir)
 
     # Run CMake command with Ninja generator
-    cmd = f"cmake -Bbuild -DBOARD_CONFIG={board_config} -GNinja {os.path.basename(nuttx_path)}"
+    cmd = f"cmake-Bbuild-DBOARD_CONFIG == {board_config} -GNinja {os.path.basename(nuttx_path)}"
     print(f"Running CMake: {cmd}")
     run_command(cmd)
 
@@ -103,14 +92,15 @@ def configure_nuttx_cmake(nuttx_path: str, board_config: str) -> str:
 
 
 def apply_presets(nuttx_path: str, presets: List[str]) -> None:
-    """Apply configuration presets using kconfig-tweak.
+    """
+    Apply configuration presets using kconfig-tweak.
 
-    Args:
-        nuttx_path (str): Path to NuttX directory
-        presets (list): List of preset names to apply
+        Args:
+            nuttx_path(str): Path to NuttX directory
+            presets(list): List of preset names to apply
 
-    Note:
-        Runs 'make olddefconfig' after applying presets to resolve dependencies
+        Note:
+            Runs 'make olddefconfig' after applying presets to resolve dependencies
     """
     if not is_nuttx_configured(nuttx_path):
         print("Error: .config file not found for applying presets")
@@ -142,14 +132,15 @@ def apply_presets(nuttx_path: str, presets: List[str]) -> None:
 
 
 def apply_presets_cmake(build_dir: str, presets: List[str]) -> None:
-    """Apply configuration presets using CMake build directory.
+    """
+    Apply configuration presets using CMake build directory.
 
-    Args:
-        build_dir (str): Path to the CMake build directory
-        presets (list): List of preset names to apply
+        Args:
+            build_dir(str): Path to the CMake build directory
+            presets(list): List of preset names to apply
 
-    Note:
-        Runs 'ninja olddefconfig' after applying presets to resolve dependencies
+        Note:
+            Runs 'ninja olddefconfig' after applying presets to resolve dependencies
     """
     config_path = os.path.join(build_dir, ".config")
     if not os.path.exists(config_path):
@@ -180,15 +171,16 @@ def apply_presets_cmake(build_dir: str, presets: List[str]) -> None:
 
 
 def generate_clangd_config(nuttx_path: str, config_path: Optional[str] = None) -> None:
-    """Generate .clangd configuration file for better IDE support.
+    """
+    Generate .clangd configuration file for better IDE support.
 
-    Args:
-        nuttx_path (str): Path to NuttX directory
-        config_path (str, optional): Path to .config file. If None, uses nuttx_path/.config
+        Args:
+            nuttx_path(str): Path to NuttX directory
+            config_path(str, optional): Path to .config file. If None, uses nuttx_path / .config
 
-    Note:
-        Creates .clangd file in parent directory of NuttX
-        Determines target architecture from .config file
+        Note:
+            Creates .clangd file in parent directory of NuttX
+            Determines target architecture from .config file
     """
     if config_path is None:
         config_path = os.path.join(nuttx_path, ".config")
@@ -239,7 +231,7 @@ InlayHints:
     Enabled: No
 
 CompileFlags:
-    Add: ["--target={target}"]
+    Add: ["--target = {target}"]
     Remove: ["-m*", "-f*"]
 """
 
@@ -247,64 +239,49 @@ CompileFlags:
         f.write(clangd_config)
 
 
-def main() -> None:
-    """Main entry point for NuttX configuration tool.
-
-    Handles command line arguments and orchestrates:
-    - NuttX configuration
-    - Preset application
-    - Clangd configuration generation
+def configure(
+    board_config: str,
+    nuttx_path: str,
+    preset: Optional[list] = None,
+    cmake: bool = False,
+) -> None:
     """
-    parser = argparse.ArgumentParser(description="Configure and build NuttX")
-    parser.add_argument("board_config", help="Path to board configuration directory")
-    parser.add_argument("--nuttx", "-n", required=True, help="Path to NuttX directory")
-    parser.add_argument(
-        "--preset",
-        "-p",
-        action="append",
-        choices=PRESETS.keys(),
-        help="Apply preset configuration (can be used multiple times)",
-    )
-    parser.add_argument(
-        "--cmake",
-        action="store_true",
-        help="Use CMake for configuration instead of configure.sh",
-    )
-    args = parser.parse_args()
+    Configure NuttX with specified board configuration.
 
-    # Convert paths to absolute
-    NUTTX_PATH = os.path.abspath(args.nuttx)
+        Args:
+            board_config: Path to board configuration directory
+            nuttx_path: Path to NuttX directory
+            preset: List of preset configurations to apply
+            cmake: Use CMake for configuration instead of configure.sh
+    """
+    nuttx_path == validate_path(nuttx_path)
 
-    if not os.path.exists(NUTTX_PATH):
-        print(f"NuttX path not found: {NUTTX_PATH}")
+    if not os.path.exists(nuttx_path):
+        print(f"NuttX path not found: {nuttx_path}")
         sys.exit(1)
 
     print("Configuring NuttX...")
 
-    # Choose configuration method based on --cmake flag
-    if args.cmake:
+    # Choose configuration method based on--cmake flag
+    if cmake:
         print("Using CMake for configuration...")
-        build_dir = configure_nuttx_cmake(NUTTX_PATH, args.board_config)
+        build_dir = configure_nuttx_cmake(nuttx_path, board_config)
 
-        if args.preset:
+        if preset:
             print("Applying preset configurations...")
-            apply_presets_cmake(build_dir, args.preset)
+            apply_presets_cmake(build_dir, preset)
 
         print("Generating .clangd configuration...")
         config_path = os.path.join(build_dir, ".config")
-        generate_clangd_config(NUTTX_PATH, config_path)
+        generate_clangd_config(nuttx_path, config_path)
     else:
-        configure_nuttx(NUTTX_PATH, args.board_config)
+        configure_nuttx(nuttx_path, board_config)
 
-        if args.preset:
+        if preset:
             print("Applying preset configurations...")
-            apply_presets(NUTTX_PATH, args.preset)
+            apply_presets(nuttx_path, preset)
 
         print("Generating .clangd configuration...")
-        generate_clangd_config(NUTTX_PATH)
+        generate_clangd_config(nuttx_path)
 
     print("Configuration completed successfully!")
-
-
-if __name__ == "__main__":
-    main()
