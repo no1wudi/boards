@@ -3,6 +3,7 @@ Build functionality for NuttX projects."""
 
 import os
 import sys
+import multiprocessing
 from typing import Optional
 
 from utils.helpers import run_command, validate_path
@@ -29,16 +30,24 @@ def detect_build_system(nuttx_path: str) -> str:
     return "cmake"
 
 
-def build_with_make(nuttx_path: str, target: str = "all") -> None:
+def build_with_make(
+    nuttx_path: str, target: str = "all", jobs: Optional[int] = None
+) -> None:
     """
     Build NuttX using Make.
 
         Args:
             nuttx_path(str): Path to NuttX directory
             target(str): Make target to build(default: 'all')
+            jobs(int): Number of parallel jobs (default: CPU count)
     """
     os.chdir(nuttx_path)
-    run_command(f"make {target}")
+
+    if jobs is None:
+        jobs = multiprocessing.cpu_count()
+        print(f"Using {jobs} parallel jobs (CPU count)")
+
+    run_command(f"make -j{jobs} {target}")
 
 
 def build_with_cmake(nuttx_path: str, target: str = "all") -> None:
@@ -61,13 +70,16 @@ def build_with_cmake(nuttx_path: str, target: str = "all") -> None:
     run_command(f"ninja {target}")
 
 
-def build(nuttx_path: str, target: Optional[str] = None) -> None:
+def build(
+    nuttx_path: str, target: Optional[str] = None, jobs: Optional[int] = None
+) -> None:
     """
     Build NuttX project with auto - detected build system.
 
         Args:
             nuttx_path: Path to NuttX directory
             target: Build target(default: 'all')
+            jobs: Number of parallel jobs for Make build (default: CPU count)
     """
     nuttx_path = validate_path(nuttx_path)
 
@@ -79,8 +91,14 @@ def build(nuttx_path: str, target: Optional[str] = None) -> None:
     print(f"Building NuttX using {build_system}...")
 
     if build_system == "make":
-        build_with_make(nuttx_path, target)
+        if jobs:
+            print(f"Using {jobs} parallel jobs")
+        build_with_make(nuttx_path, target, jobs)
     else:
+        if jobs:
+            print(
+                "Warning: --jobs option only applies to Make builds, ignoring for CMake"
+            )
         build_with_cmake(nuttx_path, target)
 
     print("Build completed successfully!")

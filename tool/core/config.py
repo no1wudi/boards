@@ -48,7 +48,7 @@ def configure_nuttx(nuttx_path: str, board_config: str) -> None:
         print("NuttX already configured, running distclean")
         run_command("make distclean")
 
-    run_command(f"./tools / configure.sh-S {board_config}")
+    run_command(f"./tools/configure.sh {board_config}")
 
 
 def configure_nuttx_cmake(nuttx_path: str, board_config: str) -> str:

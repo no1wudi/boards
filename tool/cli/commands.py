@@ -28,6 +28,9 @@ def create_parser() -> argparse.ArgumentParser:
     build_parser = subparsers.add_parser("build", help="Build NuttX project")
     build_parser.add_argument("nuttx_path", help="Path to NuttX directory")
     build_parser.add_argument("--target", help="Build target (default: all)")
+    build_parser.add_argument(
+        "--jobs", "-j", type=int, help="Number of parallel jobs for Make build"
+    )
 
     # Configure command
     config_parser = subparsers.add_parser("configure", help="Configure NuttX project")
@@ -66,7 +69,7 @@ def handle_build(args) -> None:
         Args:
             args: Parsed command line arguments
     """
-    build(args.nuttx_path, args.target)
+    build(args.nuttx_path, args.target, args.jobs)
 
 
 def handle_configure(args) -> None:
