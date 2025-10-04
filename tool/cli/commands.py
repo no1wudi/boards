@@ -8,6 +8,7 @@ from core.builder import build
 from core.flasher import flash
 from core.config import configure
 from core.terminal import terminal
+from core.cleaner import clean, rebuild
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -59,6 +60,20 @@ def create_parser() -> argparse.ArgumentParser:
         "--python", default=sys.executable, help="Python executable to use"
     )
 
+    # Clean command
+    clean_parser = subparsers.add_parser("clean", help="Clean NuttX project")
+    clean_parser.add_argument("nuttx_path", help="Path to NuttX directory")
+
+    # Rebuild command
+    rebuild_parser = subparsers.add_parser(
+        "rebuild",
+        help="Rebuild NuttX project with bear to generate compile_commands.json (make-based only)",
+    )
+    rebuild_parser.add_argument("nuttx_path", help="Path to NuttX directory")
+    rebuild_parser.add_argument(
+        "--jobs", "-j", type=int, help="Number of parallel jobs for Make build"
+    )
+
     return parser
 
 
@@ -107,6 +122,28 @@ def handle_terminal(args) -> None:
     terminal(args.nuttx_path, args.port, args.python)
 
 
+def handle_clean(args) -> None:
+    """
+    Handle clean command.
+
+        Args:
+            args: Parsed command line arguments
+    """
+    if not clean(args.nuttx_path):
+        sys.exit(1)
+
+
+def handle_rebuild(args) -> None:
+    """
+    Handle rebuild command.
+
+        Args:
+            args: Parsed command line arguments
+    """
+    if not rebuild(args.nuttx_path, args.jobs):
+        sys.exit(1)
+
+
 def main() -> None:
     """
     Main entry point for CLI commands."""
@@ -123,6 +160,8 @@ def main() -> None:
         "configure": handle_configure,
         "flash": handle_flash,
         "term": handle_terminal,
+        "clean": handle_clean,
+        "rebuild": handle_rebuild,
     }
 
     handler = handlers.get(args.command)

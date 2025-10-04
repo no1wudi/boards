@@ -7,10 +7,10 @@ import sys
 
 def run_command(cmd: str) -> None:
     """Execute a shell command and exit on failure.
-    
+
     Args:
         cmd (str): The shell command to execute
-        
+
     Raises:
         SystemExit: If the command fails (non-zero return code)
     """
@@ -22,13 +22,13 @@ def run_command(cmd: str) -> None:
 
 def run_command_with_output(cmd: str) -> str:
     """Execute a shell command and return output.
-    
+
     Args:
         cmd (str): The shell command to execute
-        
+
     Returns:
         str: Command output
-        
+
     Raises:
         SystemExit: If the command fails (non-zero return code)
     """
@@ -45,14 +45,14 @@ def run_command_with_output(cmd: str) -> str:
 
 def validate_path(path: str, must_exist: bool = True) -> str:
     """Validate and return absolute path.
-    
+
     Args:
         path (str): Path to validate
         must_exist (bool): Whether path must exist
-        
+
     Returns:
         str: Absolute path
-        
+
     Raises:
         SystemExit: If path validation fails
     """
