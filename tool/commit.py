@@ -19,17 +19,22 @@ MAX_FILE_SIZE_KB: int = 50
 # Format prompts for different commit message styles
 format_prompts: Dict[str, str] = {
     "nuttx": """You are an experienced software engineer writing a commit message following the Apache NuttX RTOS format:
-    <functional_context>: <topic>
+    <functional_area>: <short_self_explanatory_functional_context>.
 
     <description>
 
     === Required Format ===
-    - First line must have format: "<component>: <topic>"
-      Example: "sched: Fixed compiler warning"
+    - First line must have format: "<functional_area>: <short_self_explanatory_functional_context>."
+      Example: "sched: Fixed compiler warning."
+      Note the period at the end of the topic line.
 
-    - Description (optional) must be separated from topic by blank line
+    - Description must be separated from topic by blank line
 
-    - Description can include bullet points for multiple items
+    - Description explains what is changed, how, and why
+
+    - Description can use several lines, short sentences, or bullet points
+
+    - Must end with signature (git commit -s adds this automatically)
 
     === Sample Commit Message ===
     net/can: Add g_ prefix to can_dlc_to_len and len_to_can_dlc.
@@ -37,9 +42,10 @@ format_prompts: Dict[str, str] = {
     Add g_ prefix to can_dlc_to_len and len_to_can_dlc to
     follow NuttX coding style conventions for global symbols,
     improving code readability and maintainability.
-    * Fixed naming convention for global symbols
-    * Improved code consistency
-    * Enhanced maintainability""",
+    * you can also use bullet points.
+    * to note different things briefly.
+
+    Signed-off-by: AuthorName <Valid@EmailAddress>""",
     "conventional": """You are an experienced software engineer. Please write a commit message following the Conventional Commits format:
     <type>[optional scope]: <description>
 
@@ -75,36 +81,85 @@ format_prompts: Dict[str, str] = {
     "pr": """You are an experienced software engineer writing a pull request description for Apache NuttX RTOS:
 
     === Required Format ===
-    Summary:
-    - Why change is necessary (fix, update, new feature)
-    - What functional part of code is being changed
-    - How change exactly works
-    - Related issue/PR references if applicable
+    ## Summary
 
-    Impact:
-    - New feature added? YES/NO (describe if yes)
-    - Impact on user? YES/NO (describe if yes)
-    - Impact on build? YES/NO (describe if yes)
-    - Impact on hardware? YES/NO (describe if yes)
-    - Impact on documentation? YES/NO (describe if yes)
-    - Impact on security? YES/NO (describe if yes)
-    - Impact on compatibility? YES/NO (describe if yes)
+      * Why change is necessary (fix, update, new feature)?
+      * What functional part of the code is being changed?
+      * How does the change exactly work (what will change and how)?
+      * Related [NuttX Issue](https://github.com/apache/nuttx/issues) reference if applicable.
+      * Related NuttX Apps [Issue](https://github.com/apache/nuttx-apps/issues) / [Pull Request](https://github.com/apache/nuttx-apps/pulls) reference if applicable.
+
+    ## Impact
+
+      * Is new feature added? Is existing feature changed? NO / YES (please describe if yes).
+      * Impact on user (will user need to adapt to change)? NO / YES (please describe if yes).
+      * Impact on build (will build process change)? NO / YES (please describe if yes).
+      * Impact on hardware (will arch(s) / board(s) / driver(s) change)? NO / YES (please describe if yes).
+      * Impact on documentation (is update required / provided)? NO / YES (please describe if yes).
+      * Impact on security (any sort of implications)? NO / YES (please describe if yes).
+      * Impact on compatibility (backward/forward/interoperability)? NO / YES (please describe if yes).
+      * Anything else to consider or add?
+
+    ## Testing
+
+      I confirm that changes are verified on local setup and works as intended:
+      * Build Host(s): OS (Linux,BSD,macOS,Windows,..), CPU(Intel,AMD,ARM), compiler(GCC,CLANG,version), etc.
+      * Target(s): arch(sim,RISC-V,ARM,..), board:config, etc.
+      * you can also provide steps on how to reproduce the problem and verify the change.
+
+      Testing logs before change:
+
+      ```
+      build and runtime logs before change goes here
+      ```
+
+      Testing logs after change:
+
+      ```
+      build and runtime logs after change goes here
+      ```
+
+    ## PR verification Self-Check
+
+      * [ ] This PR introduces only one functional change.
+      * [ ] I have updated all required description fields above.
+      * [ ] My PR adheres to Contributing [Guidelines](https://github.com/apache/nuttx/blob/master/CONTRIBUTING.md) and [Documentation](https://nuttx.apache.org/docs/latest/contributing/index.html) (git commit title and message, coding standard, etc).
+      * [ ] My PR is still work in progress (not ready for review).
+      * [ ] My PR is ready for review and can be safely merged into a codebase.
 
     === Sample PR Description ===
-    Summary:
-    * Add support for new RISC-V SiFive board
-    * Implements basic GPIO and UART drivers
-    * Adds board configuration and documentation
-    * Related to issue #1234
+    ## Summary
 
-    Impact:
-    * New feature added?: YES - Adds new board support
-    * Impact on user?: NO
-    * Impact on build?: YES - New board configs added to build system
-    * Impact on hardware?: YES - New RISC-V board support
-    * Impact on documentation?: YES - Added board documentation
-    * Impact on security?: NO
-    * Impact on compatibility?: NO""",
+      * Add support for new RISC-V SiFive board
+      * Implements basic GPIO and UART drivers
+      * Adds board configuration and documentation
+      * Related to issue #1234
+
+    ## Impact
+
+      * Is new feature added? Is existing feature changed? YES - Adds new board support
+      * Impact on user (will user need to adapt to change)? NO
+      * Impact on build (will build process change)? YES - New board configs added to build system
+      * Impact on hardware (will arch(s) / board(s) / driver(s) change)? YES - New RISC-V board support
+      * Impact on documentation (is update required / provided)? YES - Added board documentation
+      * Impact on security (any sort of implications)? NO
+      * Impact on compatibility (backward/forward/interoperability)? NO
+      * Anything else to consider or add? NO
+
+    ## Testing
+
+      I confirm that changes are verified on local setup and works as intended:
+      * Build Host(s): Ubuntu 22.04, Intel x86_64, GCC 11.4.0
+      * Target(s): RISC-V, sifive:e31-arty
+
+      Testing logs after change:
+
+      ```
+      nuttx$ make -j8
+      [build output showing successful compilation]
+      nuttx$ qemu-system-riscv32 -nographic -machine sifive_e -kernel nuttx
+      [runtime output showing successful boot]
+      ```""",
     "summary": """You are an experienced software engineer. Create a one-line summary of the following code changes.
     The summary should:
     - Follow the format "<module/area>: <Summary of changes>"
@@ -242,7 +297,9 @@ class Git:
         """
         # First get sizes of all files
         file_sizes = []
-        for file_path in file_paths[:]:  # Use slice to avoid modifying list during iteration
+        for file_path in file_paths[
+            :
+        ]:  # Use slice to avoid modifying list during iteration
             try:
                 size = os.path.getsize(os.path.join(self.repo_path, file_path))
                 file_sizes.append((file_path, size))
