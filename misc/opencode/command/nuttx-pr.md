@@ -1,5 +1,5 @@
 ---
-description: Generate NuttX-style PR description
+description: Generate NuttX PR description
 agent: build
 ---
 
