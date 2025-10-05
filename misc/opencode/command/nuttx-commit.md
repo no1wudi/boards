@@ -1,28 +1,41 @@
 ---
-description: Generate NuttX-style commit message
+description: Generate NuttX commit message interactively
 agent: build
 ---
 
-Generate a NuttX-style commit message based on the current git changes.
+Generate a NuttX-style commit message through an interactive process.
 
-First, analyze all current changes, adhere to the principle of minimal commits, and include the most relevant and appropriate files as a commit. Then, ask the user to evaluate whether these commits are appropriate. If the user considers these changes suitable to be grouped together as a single commit, proceed to write a NuttX-style commit message for them.
-
-Let's check the current git status and changes:
+**Step 1: Analyze Current Changes**
+First, check the current git status to see what files are modified:
 ```bash
 git status --porcelain
 ```
 
-Now let's get the diff of the changes:
+**Step 2: Review Staged Changes**
+Check what changes are currently staged:
 ```bash
 git diff --cached
 ```
 
-If there are no staged changes, let's check unstaged changes:
+**Step 3: Review Unstaged Changes (if needed)**
+If there are no staged changes, check unstaged changes:
 ```bash
 git diff
 ```
 
-Based on the above changes, first analyze what changes should be grouped together following minimal commit principles. Ask the user to evaluate if these changes are appropriate as a single commit. If approved, generate a commit message following the Apache NuttX RTOS format:
+**Step 4: Group Changes Logically**
+Analyze all changes and group them logically following minimal commit principles. Consider:
+- Are these changes related to the same functional area?
+- Do they address the same issue or feature?
+- Should they be committed together or separately?
+
+**Step 5: Get User Confirmation**
+Present a draft commit message and ask:
+"Proposed commit message: [draft message]
+Any modifications needed to this commit message, or should we proceed with this?"
+
+**Step 6: Generate Commit Message**
+Once the user confirms the grouping, generate a NuttX-style commit message following the Apache NuttX RTOS format:
 
 **Required Format:**
 - First line: `<functional_area>: <short_self_explanatory_functional_context>`
