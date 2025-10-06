@@ -9,6 +9,7 @@ from core.flasher import flash
 from core.config import configure
 from core.terminal import terminal
 from core.cleaner import clean, rebuild
+from core.simulator import simulate
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -72,6 +73,14 @@ def create_parser() -> argparse.ArgumentParser:
     rebuild_parser.add_argument("nuttx_path", help="Path to NuttX directory")
     rebuild_parser.add_argument(
         "--jobs", "-j", type=int, help="Number of parallel jobs for Make build"
+    )
+
+    # Simulate command
+    sim_parser = subparsers.add_parser("simulate", help="Run QEMU simulation")
+    sim_parser.add_argument("nuttx_path", help="Path to NuttX directory")
+    sim_parser.add_argument(
+        "--qemu-options",
+        help="Additional options to pass to QEMU (e.g., '-S -s' for debug)",
     )
 
     return parser
@@ -144,6 +153,16 @@ def handle_rebuild(args) -> None:
         sys.exit(1)
 
 
+def handle_simulate(args) -> None:
+    """
+    Handle simulate command.
+
+        Args:
+            args: Parsed command line arguments
+    """
+    simulate(args.nuttx_path, args.qemu_options)
+
+
 def main() -> None:
     """
     Main entry point for CLI commands."""
@@ -162,6 +181,7 @@ def main() -> None:
         "term": handle_terminal,
         "clean": handle_clean,
         "rebuild": handle_rebuild,
+        "simulate": handle_simulate,
     }
 
     handler = handlers.get(args.command)
