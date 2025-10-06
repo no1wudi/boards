@@ -1,5 +1,6 @@
 """
-CLI command definitions for nxtool."""
+CLI command definitions for nxtool.
+"""
 
 import argparse
 import sys
@@ -16,8 +17,8 @@ def create_parser() -> argparse.ArgumentParser:
     """
     Create the main argument parser for nxtool.
 
-        Returns:
-            argparse.ArgumentParser: Configured argument parser
+    Returns:
+        argparse.ArgumentParser: Configured argument parser
     """
     parser = argparse.ArgumentParser(
         description="Unified CLI tool for NuttX board development tasks",
@@ -53,8 +54,6 @@ def create_parser() -> argparse.ArgumentParser:
         "--openocd", help="Path to OpenOCD executable (for STM32 targets)"
     )
 
-    
-
     # Clean command
     clean_parser = subparsers.add_parser("clean", help="Clean NuttX project")
     clean_parser.add_argument("nuttx_path", help="Path to NuttX directory")
@@ -62,7 +61,10 @@ def create_parser() -> argparse.ArgumentParser:
     # Rebuild command
     rebuild_parser = subparsers.add_parser(
         "rebuild",
-        help="Rebuild NuttX project with bear to generate compile_commands.json (make-based only)",
+        help=(
+            "Rebuild NuttX project with bear to generate compile_commands.json "
+            "(make-based only)"
+        ),
     )
     rebuild_parser.add_argument("nuttx_path", help="Path to NuttX directory")
     rebuild_parser.add_argument(
@@ -80,79 +82,133 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def handle_build(args) -> None:
+def handle_build(args: argparse.Namespace) -> None:
     """
     Handle build command.
 
-        Args:
-            args: Parsed command line arguments
+    Args:
+        args: Parsed command line arguments
     """
-    build(args.nuttx_path, args.target, args.jobs)
+    if not args.nuttx_path:
+        print("Error: nuttx_path is required")
+        sys.exit(1)
+
+    try:
+        build(args.nuttx_path, args.target, args.jobs)
+    except Exception as e:
+        print(f"Build failed: {e}")
+        sys.exit(1)
 
 
-def handle_configure(args) -> None:
+def handle_configure(args: argparse.Namespace) -> None:
     """
     Handle configure command.
 
-        Args:
-            args: Parsed command line arguments
+    Args:
+        args: Parsed command line arguments
     """
-    configure(
-        args.board_config,
-        args.nuttx_path,
-        args.preset,
-        args.cmake,
-    )
+    if not args.board_config:
+        print("Error: board_config is required")
+        sys.exit(1)
+    if not args.nuttx_path:
+        print("Error: nuttx_path is required")
+        sys.exit(1)
+
+    try:
+        configure(
+            args.board_config,
+            args.nuttx_path,
+            args.preset,
+            args.cmake,
+        )
+    except Exception as e:
+        print(f"Configuration failed: {e}")
+        sys.exit(1)
 
 
-def handle_flash(args) -> None:
+def handle_flash(args: argparse.Namespace) -> None:
     """
     Handle flash command.
 
-        Args:
-            args: Parsed command line arguments
+    Args:
+        args: Parsed command line arguments
     """
-    flash(args.nuttx_path, args.port, args.openocd)
+    if not args.nuttx_path:
+        print("Error: nuttx_path is required")
+        sys.exit(1)
+
+    try:
+        flash(args.nuttx_path, args.port, args.openocd)
+    except Exception as e:
+        print(f"Flash failed: {e}")
+        sys.exit(1)
 
 
-
-
-
-def handle_clean(args) -> None:
+def handle_clean(args: argparse.Namespace) -> None:
     """
     Handle clean command.
 
-        Args:
-            args: Parsed command line arguments
+    Args:
+        args: Parsed command line arguments
     """
-    if not clean(args.nuttx_path):
+    if not args.nuttx_path:
+        print("Error: nuttx_path is required")
+        sys.exit(1)
+
+    try:
+        if not clean(args.nuttx_path):
+            print("Clean operation failed")
+            sys.exit(1)
+    except Exception as e:
+        print(f"Clean failed: {e}")
         sys.exit(1)
 
 
-def handle_rebuild(args) -> None:
+def handle_rebuild(args: argparse.Namespace) -> None:
     """
     Handle rebuild command.
 
-        Args:
-            args: Parsed command line arguments
+    Args:
+        args: Parsed command line arguments
     """
-    if not rebuild(args.nuttx_path, args.jobs):
+    if not args.nuttx_path:
+        print("Error: nuttx_path is required")
+        sys.exit(1)
+
+    try:
+        if not rebuild(args.nuttx_path, args.jobs):
+            print("Rebuild operation failed")
+            sys.exit(1)
+    except Exception as e:
+        print(f"Rebuild failed: {e}")
         sys.exit(1)
 
 
-def handle_simulate(args) -> None:
+def handle_simulate(args: argparse.Namespace) -> None:
     """
     Handle simulate command.
 
-        Args:
-            args: Parsed command line arguments
+    Args:
+        args: Parsed command line arguments
     """
-    simulate(args.nuttx_path, args.qemu_options)
+    if not args.nuttx_path:
+        print("Error: nuttx_path is required")
+        sys.exit(1)
+
+    try:
+        simulate(args.nuttx_path, args.qemu_options)
+    except Exception as e:
+        print(f"Simulation failed: {e}")
+        sys.exit(1)
 
 
 def main() -> None:
     """
-    Main entry point for CLI commands."""
+    Main entry point for CLI commands.
+
+    This function parses command line arguments and dispatches to the appropriate
+    command handler. It provides consistent error handling and user feedback.
+    """
     parser = create_parser()
     args = parser.parse_args()
 
@@ -160,7 +216,7 @@ def main() -> None:
         parser.print_help()
         sys.exit(1)
 
-    # Command handlers
+    # Command handlers mapping
     handlers = {
         "build": handle_build,
         "configure": handle_configure,
