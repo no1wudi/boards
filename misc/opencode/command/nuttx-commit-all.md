@@ -15,6 +15,9 @@ Now let's get all changes (both staged and unstaged):
 git diff HEAD
 ```
 
+**Rule: Read Entire Modified Files**
+For each file that shows changes in the diff, you MUST read the entire file content to understand the full context of the changes. Use the file paths from the git status to read each complete file before generating the commit message. This provides a comprehensive view of the codebase and ensures accurate commit messages.
+
 Based on the above changes, generate a commit message following the Apache NuttX RTOS format:
 
 **Required Format:**

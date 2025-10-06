@@ -23,18 +23,29 @@ If there are no staged changes, check unstaged changes:
 git diff
 ```
 
-**Step 4: Group Changes Logically**
+**Step 4: Read Entire Modified Files**
+For each file that shows changes in the diff, you MUST read the entire file content to understand the full context of the changes. Use the file paths from the git status to read each complete file before proceeding. This provides a comprehensive view of the codebase and ensures accurate commit messages.
+
+**Step 5: Group Changes Logically**
 Analyze all changes and group them logically following minimal commit principles. Consider:
 - Are these changes related to the same functional area?
 - Do they address the same issue or feature?
 - Should they be committed together or separately?
 
-**Step 5: Get User Confirmation**
+**General Classification Guidelines:**
+- Group by functional area first, then by specific component
+- Separate configuration changes from code changes
+- Keep documentation changes in separate commits
+- Group related test files with the code they test
+- Build system changes should be committed separately from feature changes
+- Follow the project's existing directory structure and naming conventions
+
+**Step 6: Get User Confirmation**
 Present a draft commit message and ask:
 "Proposed commit message: [draft message]
 Any modifications needed to this commit message, or should we proceed with this?"
 
-**Step 6: Generate Commit Message**
+**Step 7: Generate Commit Message**
 Once the user confirms the grouping, generate a NuttX-style commit message following the Apache NuttX RTOS format:
 
 **Required Format:**

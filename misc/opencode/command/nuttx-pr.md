@@ -20,6 +20,9 @@ Get the diff of the last commit:
 git show HEAD
 ```
 
+**Rule: Read Entire Modified Files**
+For each file that shows changes in the commit, you MUST read the entire file content to understand the full context of the changes. Use the file paths from `git show --name-only HEAD` to read each complete file before generating the PR description. This provides a comprehensive view of the codebase and ensures accurate PR descriptions.
+
 Based on the last commit's content and message, generate a comprehensive PR description following the Apache NuttX RTOS format:
 
 **Required PR Description Format:**
