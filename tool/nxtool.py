@@ -2,7 +2,7 @@
 
 """
 nxtool - Unified CLI tool for NuttX board development tasks.
-Consolidates functionality from build, configure, flash, and terminal modules.
+Consolidates functionality from build, configure, flash modules.
 """
 
 import os

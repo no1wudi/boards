@@ -7,7 +7,7 @@ import sys
 from core.builder import build
 from core.flasher import flash
 from core.config import configure
-from core.terminal import terminal
+
 from core.cleaner import clean, rebuild
 from core.simulator import simulate
 
@@ -53,13 +53,7 @@ def create_parser() -> argparse.ArgumentParser:
         "--openocd", help="Path to OpenOCD executable (for STM32 targets)"
     )
 
-    # Terminal command
-    term_parser = subparsers.add_parser("term", help="Open serial terminal")
-    term_parser.add_argument("nuttx_path", help="Path to NuttX directory")
-    term_parser.add_argument("--port", help="Specific serial port to use")
-    term_parser.add_argument(
-        "--python", default=sys.executable, help="Python executable to use"
-    )
+    
 
     # Clean command
     clean_parser = subparsers.add_parser("clean", help="Clean NuttX project")
@@ -121,14 +115,7 @@ def handle_flash(args) -> None:
     flash(args.nuttx_path, args.port, args.openocd)
 
 
-def handle_terminal(args) -> None:
-    """
-    Handle terminal command.
 
-        Args:
-            args: Parsed command line arguments
-    """
-    terminal(args.nuttx_path, args.port, args.python)
 
 
 def handle_clean(args) -> None:
@@ -178,7 +165,6 @@ def main() -> None:
         "build": handle_build,
         "configure": handle_configure,
         "flash": handle_flash,
-        "term": handle_terminal,
         "clean": handle_clean,
         "rebuild": handle_rebuild,
         "simulate": handle_simulate,
