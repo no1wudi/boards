@@ -254,7 +254,7 @@ def configure(
             preset: List of preset configurations to apply
             cmake: Use CMake for configuration instead of configure.sh
     """
-    nuttx_path == validate_path(nuttx_path)
+    nuttx_path = validate_path(nuttx_path)
 
     if not os.path.exists(nuttx_path):
         print(f"NuttX path not found: {nuttx_path}")
