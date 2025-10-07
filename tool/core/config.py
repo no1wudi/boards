@@ -231,8 +231,9 @@ InlayHints:
     Enabled: No
 
 CompileFlags:
-    Add: ["--target = {target}"]
+    Add: ["--target={target}"]
     Remove: ["-m*", "-f*"]
+    BuiltinHeaders: QueryDriver
 """
 
     with open(os.path.join(nuttx_path, "..", ".clangd"), "w") as f:
