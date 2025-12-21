@@ -1,0 +1,25 @@
+:name: STM32F746
+:description: This script runs Dartino on STM32F7 Discovery.
+
+using sysbus
+$name?="STM32F746"
+mach create $name
+
+emulation CreateUartPtyTerminal "term" "/tmp/ttyRenode"
+
+machine LoadPlatformDescription @platforms/boards/stm32f7_discovery-bb.repl
+
+connector Connect sysbus.usart1 term
+
+ltdc FramesPerVirtualSecond 100
+
+$bin ?= @nuttx/nuttx
+
+macro reset
+"""
+    sysbus LoadELF $bin
+"""
+
+runMacro $reset
+
+machine StartGdbServer 3333
