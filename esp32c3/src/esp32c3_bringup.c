@@ -26,10 +26,10 @@
 
 #include <debug.h>
 #include <fcntl.h>
-#include <syslog.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <syslog.h>
 #include <unistd.h>
 
 #include <nuttx/fs/fs.h>
@@ -67,8 +67,8 @@
 #endif
 
 #ifdef CONFIG_ESPRESSIF_SPI
-#include "espressif/esp_spi.h"
 #include "esp_board_spidev.h"
+#include "espressif/esp_spi.h"
 #endif
 
 #ifdef CONFIG_ESPRESSIF_WIFI_BT_COEXIST
@@ -80,8 +80,8 @@
 #endif
 
 #ifdef CONFIG_SPI_SLAVE_DRIVER
-#include "espressif/esp_spi.h"
 #include "esp_board_spislavedev.h"
+#include "espressif/esp_spi.h"
 #endif
 
 #include "esp32c3-generic.h"
@@ -115,16 +115,14 @@
  *
  ****************************************************************************/
 
-int esp_bringup(void)
-{
+int esp_bringup(void) {
   int ret = OK;
 
 #ifdef CONFIG_FS_PROCFS
   /* Mount the procfs file system */
 
   ret = nx_mount(NULL, "/proc", "procfs", 0, NULL);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to mount procfs at /proc: %d\n", ret);
   }
 #endif
@@ -133,55 +131,48 @@ int esp_bringup(void)
   /* Mount the tmpfs file system */
 
   ret = nx_mount(NULL, CONFIG_LIBC_TMPDIR, "tmpfs", 0, NULL);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to mount tmpfs at %s: %d\n", CONFIG_LIBC_TMPDIR, ret);
   }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_MWDT0
   ret = esp_wdt_initialize("/dev/watchdog0", ESP_WDT_MWDT0);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize WDT: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_MWDT1
   ret = esp_wdt_initialize("/dev/watchdog1", ESP_WDT_MWDT1);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize WDT: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_RWDT
   ret = esp_wdt_initialize("/dev/watchdog2", ESP_WDT_RWDT);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize WDT: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_XTWDT
   ret = esp_wdt_initialize("/dev/watchdog3", ESP_WDT_XTAL32K);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize WDT: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_TIMER
   ret = esp_timer_initialize(0);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize Timer 0: %d\n", ret);
   }
 
 #ifndef CONFIG_ONESHOT
   ret = esp_timer_initialize(1);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize Timer 1: %d\n", ret);
   }
 #endif
@@ -189,16 +180,14 @@ int esp_bringup(void)
 
 #if defined(CONFIG_ESPRESSIF_SPI) && defined(CONFIG_SPI_DRIVER)
   ret = board_spidev_initialize(ESPRESSIF_SPI2);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to init spidev 2: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_SPIFLASH
   ret = board_spiflash_init();
-  if (ret)
-  {
+  if (ret) {
     syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
   }
 #endif
@@ -210,16 +199,14 @@ int esp_bringup(void)
 
 #ifdef CONFIG_ESPRESSIF_WIFI
   ret = board_wlan_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to initialize wireless subsystem=%d\n", ret);
   }
 #endif
 
 #if defined(CONFIG_SPI_SLAVE_DRIVER) && defined(CONFIG_ESPRESSIF_SPI2)
   ret = board_spislavedev_initialize(ESPRESSIF_SPI2);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize SPI%d Slave driver: %d\n",
            ESPRESSIF_SPI2, ret);
   }
@@ -227,22 +214,19 @@ int esp_bringup(void)
 
 #ifdef CONFIG_ONESHOT
   ret = esp_oneshot_initialize();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize Oneshot Timer: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESP_RMT
   ret = board_rmt_txinitialize(RMT_TXCHANNEL, RMT_OUTPUT_PIN);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: board_rmt_txinitialize() failed: %d\n", ret);
   }
 
   ret = board_rmt_rxinitialize(RMT_RXCHANNEL, RMT_INPUT_PIN);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: board_rmt_txinitialize() failed: %d\n", ret);
   }
 #endif
@@ -251,8 +235,7 @@ int esp_bringup(void)
   /* Initialize the RTC driver */
 
   ret = esp_rtc_driverinit();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     _err("Failed to initialize the RTC driver: %d\n", ret);
   }
 #endif
@@ -262,16 +245,14 @@ int esp_bringup(void)
   /* Initialize TWAI and register the TWAI driver. */
 
   ret = board_twai_setup();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: board_twai_setup failed: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_DEV_GPIO
   ret = esp_gpio_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     ierr("Failed to initialize GPIO Driver: %d\n", ret);
   }
 #endif
@@ -280,24 +261,21 @@ int esp_bringup(void)
   /* Register the BUTTON driver */
 
   ret = btn_lower_initialize("/dev/buttons");
-  if (ret < 0)
-  {
+  if (ret < 0) {
     ierr("ERROR: btn_lower_initialize() failed: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESPRESSIF_LEDC
   ret = board_ledc_setup();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: board_ledc_setup() failed: %d\n", ret);
   }
 #endif /* CONFIG_ESPRESSIF_LEDC */
 
 #ifdef CONFIG_VIDEO_FB
   ret = fb_register(0, 0);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Framebuffer registration failed: %d\n", ret);
   }
 #endif /* CONFIG_VIDEO_FB */

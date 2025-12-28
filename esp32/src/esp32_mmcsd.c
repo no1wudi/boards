@@ -31,8 +31,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "esp32_spi.h"
 #include "esp32-devkitc.h"
+#include "esp32_spi.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -57,23 +57,20 @@
  *   Initialize SPI-based SD card and card detect thread.
  ****************************************************************************/
 
-int esp32_mmcsd_initialize(int minor)
-{
+int esp32_mmcsd_initialize(int minor) {
   struct spi_dev_s *spi;
-  int               rv;
+  int rv;
 
   mcinfo("INFO: Initializing mmcsd card\n");
 
   spi = esp32_spibus_initialize(CONFIG_NSH_MMCSDSPIPORTNO);
-  if (spi == NULL)
-  {
+  if (spi == NULL) {
     mcerr("ERROR: Failed to initialize SPI port %d\n", 2);
     return -ENODEV;
   }
 
   rv = mmcsd_spislotinitialize(minor, 0, spi);
-  if (rv < 0)
-  {
+  if (rv < 0) {
     mcerr("ERROR: Failed to bind SPI port %d to SD slot %d\n", 2, 0);
     return rv;
   }

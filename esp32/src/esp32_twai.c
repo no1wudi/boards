@@ -24,16 +24,16 @@
 
 #include <nuttx/config.h>
 
-#include <errno.h>
 #include <debug.h>
+#include <errno.h>
 
-#include <nuttx/can/can.h>
 #include <arch/board/board.h>
+#include <nuttx/can/can.h>
 
 #include "chip.h"
 
-#include "esp32_twai.h"
 #include "esp32-devkitc.h"
+#include "esp32_twai.h"
 
 #ifdef CONFIG_CAN
 
@@ -57,19 +57,17 @@
  *
  ****************************************************************************/
 
-int esp32_twai_setup(void)
-{
+int esp32_twai_setup(void) {
 #ifdef CONFIG_ESP32_TWAI0
   struct can_dev_s *twai;
-  int               ret;
+  int ret;
 
   /* Call esp32_twaiinitialize() to get an instance of the TWAI0
    * interface
    * */
 
   twai = esp32_twaiinitialize(TWAI_PORT0);
-  if (twai == NULL)
-  {
+  if (twai == NULL) {
     canerr("ERROR:  Failed to get TWAI0 interface\n");
     return -ENODEV;
   }
@@ -77,8 +75,7 @@ int esp32_twai_setup(void)
   /* Register the TWAI0 driver at "/dev/can0" */
 
   ret = can_register("/dev/can0", twai);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     canerr("ERROR: TWAI1 register failed: %d\n", ret);
     return ret;
   }

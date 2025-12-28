@@ -24,15 +24,15 @@
 
 #include <nuttx/config.h>
 
-#include <stdint.h>
-#include <stdbool.h>
 #include <debug.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#include <nuttx/board.h>
 #include <arch/board/board.h>
+#include <nuttx/board.h>
 
-#include "esp32_gpio.h"
 #include "esp32-devkitc.h"
+#include "esp32_gpio.h"
 
 /****************************************************************************
  * Private Data
@@ -52,12 +52,10 @@ static const uint32_t g_ledcfg[BOARD_NLEDS] = {
  * Name: board_userled_initialize
  ****************************************************************************/
 
-uint32_t board_userled_initialize(void)
-{
+uint32_t board_userled_initialize(void) {
   uint8_t i;
 
-  for (i = 0; i < BOARD_NLEDS; i++)
-  {
+  for (i = 0; i < BOARD_NLEDS; i++) {
     esp32_configgpio(g_ledcfg[i], OUTPUT);
   }
 
@@ -68,10 +66,8 @@ uint32_t board_userled_initialize(void)
  * Name: board_userled
  ****************************************************************************/
 
-void board_userled(int led, bool ledon)
-{
-  if ((unsigned)led < BOARD_NLEDS)
-  {
+void board_userled(int led, bool ledon) {
+  if ((unsigned)led < BOARD_NLEDS) {
     esp32_gpiowrite(g_ledcfg[led], ledon);
   }
 }
@@ -80,14 +76,12 @@ void board_userled(int led, bool ledon)
  * Name: board_userled_all
  ****************************************************************************/
 
-void board_userled_all(uint32_t ledset)
-{
+void board_userled_all(uint32_t ledset) {
   uint8_t i;
 
   /* Configure LED1-8 GPIOs for output */
 
-  for (i = 0; i < BOARD_NLEDS; i++)
-  {
+  for (i = 0; i < BOARD_NLEDS; i++) {
     esp32_gpiowrite(g_ledcfg[i], (ledset & (1 << i)) != 0);
   }
 }

@@ -55,9 +55,7 @@
  *
  ****************************************************************************/
 
-void esp_board_initialize(void)
-{
-}
+void esp_board_initialize(void) {}
 
 /****************************************************************************
  * Name: board_late_initialize
@@ -80,8 +78,7 @@ void esp_board_initialize(void)
  ****************************************************************************/
 
 #ifdef CONFIG_BOARD_LATE_INITIALIZE
-void board_late_initialize(void)
-{
+void board_late_initialize(void) {
   /* Perform board-specific initialization */
 
   esp_bringup();

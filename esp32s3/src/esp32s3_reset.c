@@ -53,8 +53,7 @@
  *
  ****************************************************************************/
 
-int board_reset(int status)
-{
+int board_reset(int status) {
   up_systemreset();
 
   return 0;

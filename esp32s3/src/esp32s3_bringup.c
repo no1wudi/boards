@@ -74,8 +74,7 @@
  *
  ****************************************************************************/
 
-int esp32s3_bringup(void)
-{
+int esp32s3_bringup(void) {
   int ret;
 
 #ifdef CONFIG_BOARD_ESP32S3_BUZZER
@@ -90,8 +89,7 @@ int esp32s3_bringup(void)
   /* Mount the procfs file system */
 
   ret = nx_mount(NULL, "/proc", "procfs", 0, NULL);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to mount procfs at /proc: %d\n", ret);
   }
 #endif
@@ -100,8 +98,7 @@ int esp32s3_bringup(void)
   /* Mount the tmpfs file system */
 
   ret = nx_mount(NULL, CONFIG_LIBC_TMPDIR, "tmpfs", 0, NULL);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to mount tmpfs at %s: %d\n",
            CONFIG_LIBC_TMPDIR, ret);
   }
@@ -111,16 +108,14 @@ int esp32s3_bringup(void)
   /* Configure general purpose timers */
 
   ret = board_tim_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize timers: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESP32S3_RT_TIMER
   ret = esp32s3_rt_timer_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
   }
 #endif
@@ -129,8 +124,7 @@ int esp32s3_bringup(void)
   /* Configure watchdog timer */
 
   ret = board_wdt_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize watchdog timer: %d\n", ret);
   }
 #endif
@@ -139,16 +133,14 @@ int esp32s3_bringup(void)
   /* Register the BUTTON driver */
 
   ret = btn_lower_initialize("/dev/buttons");
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize button driver: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESP32S3_SPIFLASH
   ret = board_spiflash_init();
-  if (ret)
-  {
+  if (ret) {
     syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
   }
 #endif
@@ -165,8 +157,7 @@ int esp32s3_bringup(void)
   /* Initialize I2C0 and register it to /dev/i2c0 */
   struct i2c_master_s *master = esp32s3_i2cbus_initialize(0);
 #ifdef CONFIG_SYSTEM_I2CTOOL
-  if (master)
-  {
+  if (master) {
     i2c_register(master, 0);
   }
 #endif

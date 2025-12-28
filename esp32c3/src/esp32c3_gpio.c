@@ -28,16 +28,16 @@
 
 /* Libc */
 
-#include <sys/types.h>
-#include <syslog.h>
 #include <assert.h>
 #include <debug.h>
+#include <sys/types.h>
+#include <syslog.h>
 
 /* NuttX */
 
 #include <arch/irq.h>
-#include <nuttx/irq.h>
 #include <nuttx/ioexpander/gpio.h>
+#include <nuttx/irq.h>
 
 /* Arch */
 
@@ -77,16 +77,14 @@
  * Private Types
  ****************************************************************************/
 
-struct espgpio_dev_s
-{
+struct espgpio_dev_s {
   struct gpio_dev_s gpio;
-  uint8_t           id;
+  uint8_t id;
 };
 
-struct espgpint_dev_s
-{
+struct espgpint_dev_s {
   struct espgpio_dev_s espgpio;
-  pin_interrupt_t      callback;
+  pin_interrupt_t callback;
 };
 
 /****************************************************************************
@@ -96,7 +94,7 @@ struct espgpint_dev_s
 #if BOARD_NGPIOOUT > 0
 static int gpout_read(struct gpio_dev_s *dev, bool *value);
 static int gpout_write(struct gpio_dev_s *dev, bool value);
-static int gpout_setpintype(struct gpio_dev_s  *dev,
+static int gpout_setpintype(struct gpio_dev_s *dev,
                             enum gpio_pintype_e pintype);
 #endif
 
@@ -104,7 +102,7 @@ static int gpout_setpintype(struct gpio_dev_s  *dev,
 static int gpint_read(struct gpio_dev_s *dev, bool *value);
 static int gpint_attach(struct gpio_dev_s *dev, pin_interrupt_t callback);
 static int gpint_enable(struct gpio_dev_s *dev, bool enable);
-static int gpint_setpintype(struct gpio_dev_s  *dev,
+static int gpint_setpintype(struct gpio_dev_s *dev,
                             enum gpio_pintype_e pintype);
 #endif
 
@@ -114,10 +112,10 @@ static int gpint_setpintype(struct gpio_dev_s  *dev,
 
 #if BOARD_NGPIOOUT > 0
 static const struct gpio_operations_s gpout_ops = {
-    .go_read       = gpout_read,
-    .go_write      = gpout_write,
-    .go_attach     = NULL,
-    .go_enable     = NULL,
+    .go_read = gpout_read,
+    .go_write = gpout_write,
+    .go_attach = NULL,
+    .go_enable = NULL,
     .go_setpintype = gpout_setpintype,
 };
 
@@ -130,10 +128,10 @@ static struct espgpio_dev_s g_gpout[BOARD_NGPIOOUT];
 
 #if BOARD_NGPIOINT > 0
 static const struct gpio_operations_s gpint_ops = {
-    .go_read       = gpint_read,
-    .go_write      = NULL,
-    .go_attach     = gpint_attach,
-    .go_enable     = gpint_enable,
+    .go_read = gpint_read,
+    .go_write = NULL,
+    .go_attach = gpint_attach,
+    .go_enable = gpint_enable,
     .go_setpintype = gpint_setpintype,
 };
 
@@ -166,8 +164,7 @@ static struct espgpint_dev_s g_gpint[BOARD_NGPIOINT];
  ****************************************************************************/
 
 #if BOARD_NGPIOOUT > 0
-static int gpout_read(struct gpio_dev_s *dev, bool *value)
-{
+static int gpout_read(struct gpio_dev_s *dev, bool *value) {
   struct espgpio_dev_s *espgpio = (struct espgpio_dev_s *)dev;
 
   DEBUGASSERT(espgpio != NULL && value != NULL);
@@ -193,8 +190,7 @@ static int gpout_read(struct gpio_dev_s *dev, bool *value)
  *
  ****************************************************************************/
 
-static int gpout_write(struct gpio_dev_s *dev, bool value)
-{
+static int gpout_write(struct gpio_dev_s *dev, bool value) {
   struct espgpio_dev_s *espgpio = (struct espgpio_dev_s *)dev;
 
   DEBUGASSERT(espgpio != NULL);
@@ -220,8 +216,8 @@ static int gpout_write(struct gpio_dev_s *dev, bool value)
  *
  ****************************************************************************/
 
-static int gpout_setpintype(struct gpio_dev_s *dev, enum gpio_pintype_e pintype)
-{
+static int gpout_setpintype(struct gpio_dev_s *dev,
+                            enum gpio_pintype_e pintype) {
   struct espgpio_dev_s *espgpio = (struct espgpio_dev_s *)dev;
 
   DEBUGASSERT(espgpio != NULL);
@@ -230,8 +226,7 @@ static int gpout_setpintype(struct gpio_dev_s *dev, enum gpio_pintype_e pintype)
 
   esp_gpio_matrix_out(g_gpiooutputs[espgpio->id], SIG_GPIO_OUT_IDX, 0, 0);
 
-  switch (pintype)
-  {
+  switch (pintype) {
   case GPIO_INPUT_PIN:
     esp_configgpio(g_gpiooutputs[espgpio->id], INPUT);
     break;
@@ -274,8 +269,7 @@ static int gpout_setpintype(struct gpio_dev_s *dev, enum gpio_pintype_e pintype)
  ****************************************************************************/
 
 #if BOARD_NGPIOINT > 0
-static int espgpio_interrupt(int irq, void *context, void *arg)
-{
+static int espgpio_interrupt(int irq, void *context, void *arg) {
   struct espgpint_dev_s *espgpint = (struct espgpint_dev_s *)arg;
 
   DEBUGASSERT(espgpint != NULL && espgpint->callback != NULL);
@@ -300,8 +294,7 @@ static int espgpio_interrupt(int irq, void *context, void *arg)
  *
  ****************************************************************************/
 
-static int gpint_read(struct gpio_dev_s *dev, bool *value)
-{
+static int gpint_read(struct gpio_dev_s *dev, bool *value) {
   struct espgpint_dev_s *espgpint = (struct espgpint_dev_s *)dev;
 
   DEBUGASSERT(espgpint != NULL && value != NULL);
@@ -329,8 +322,7 @@ static int gpint_read(struct gpio_dev_s *dev, bool *value)
  *
  ****************************************************************************/
 
-static int gpint_attach(struct gpio_dev_s *dev, pin_interrupt_t callback)
-{
+static int gpint_attach(struct gpio_dev_s *dev, pin_interrupt_t callback) {
   struct espgpint_dev_s *espgpint = (struct espgpint_dev_s *)dev;
   int irq = ESP_PIN2IRQ(g_gpiointinputs[espgpint->espgpio.id]);
   int ret;
@@ -341,8 +333,7 @@ static int gpint_attach(struct gpio_dev_s *dev, pin_interrupt_t callback)
 
   esp_gpioirqdisable(irq);
   ret = irq_attach(irq, espgpio_interrupt, &g_gpint[espgpint->espgpio.id]);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: gpint_attach() failed: %d\n", ret);
     return ret;
   }
@@ -367,24 +358,19 @@ static int gpint_attach(struct gpio_dev_s *dev, pin_interrupt_t callback)
  *
  ****************************************************************************/
 
-static int gpint_enable(struct gpio_dev_s *dev, bool enable)
-{
+static int gpint_enable(struct gpio_dev_s *dev, bool enable) {
   struct espgpint_dev_s *espgpint = (struct espgpint_dev_s *)dev;
   int irq = ESP_PIN2IRQ(g_gpiointinputs[espgpint->espgpio.id]);
 
-  if (enable)
-  {
-    if (espgpint->callback != NULL)
-    {
+  if (enable) {
+    if (espgpint->callback != NULL) {
       gpioinfo("Enabling the interrupt\n");
 
       /* Configure the interrupt for rising edge */
 
       esp_gpioirqenable(irq, RISING);
     }
-  }
-  else
-  {
+  } else {
     gpioinfo("Disable the interrupt\n");
     esp_gpioirqdisable(irq);
   }
@@ -407,15 +393,14 @@ static int gpint_enable(struct gpio_dev_s *dev, bool enable)
  *
  ****************************************************************************/
 
-static int gpint_setpintype(struct gpio_dev_s *dev, enum gpio_pintype_e pintype)
-{
+static int gpint_setpintype(struct gpio_dev_s *dev,
+                            enum gpio_pintype_e pintype) {
   struct espgpint_dev_s *espgpint = (struct espgpint_dev_s *)dev;
 
   DEBUGASSERT(espgpint != NULL);
   DEBUGASSERT(espgpint->espgpio.id < BOARD_NGPIOINT);
   gpioinfo("Setting pintype: %d\n", (int)pintype);
-  switch (pintype)
-  {
+  switch (pintype) {
   case GPIO_INTERRUPT_HIGH_PIN:
     esp_configgpio(g_gpiointinputs[espgpint->espgpio.id], INPUT_PULLUP);
     break;
@@ -446,19 +431,17 @@ static int gpint_setpintype(struct gpio_dev_s *dev, enum gpio_pintype_e pintype)
  *
  ****************************************************************************/
 
-int esp_gpio_init(void)
-{
+int esp_gpio_init(void) {
   int pincount = 0;
   int i;
 
 #if BOARD_NGPIOOUT > 0
-  for (i = 0; i < BOARD_NGPIOOUT; i++)
-  {
+  for (i = 0; i < BOARD_NGPIOOUT; i++) {
     /* Setup and register the GPIO pin */
 
     g_gpout[i].gpio.gp_pintype = GPIO_OUTPUT_PIN;
-    g_gpout[i].gpio.gp_ops     = &gpout_ops;
-    g_gpout[i].id              = i;
+    g_gpout[i].gpio.gp_ops = &gpout_ops;
+    g_gpout[i].id = i;
     gpio_pin_register(&g_gpout[i].gpio, pincount);
 
     /* Configure the pins that will be used as output */
@@ -472,13 +455,12 @@ int esp_gpio_init(void)
 #endif
 
 #if BOARD_NGPIOINT > 0
-  for (i = 0; i < BOARD_NGPIOINT; i++)
-  {
+  for (i = 0; i < BOARD_NGPIOINT; i++) {
     /* Setup and register the GPIO pin */
 
     g_gpint[i].espgpio.gpio.gp_pintype = GPIO_INTERRUPT_PIN;
-    g_gpint[i].espgpio.gpio.gp_ops     = &gpint_ops;
-    g_gpint[i].espgpio.id              = i;
+    g_gpint[i].espgpio.gpio.gp_ops = &gpint_ops;
+    g_gpint[i].espgpio.id = i;
     gpio_pin_register(&g_gpint[i].espgpio.gpio, pincount);
 
     /* Configure the pins that will be used as interrupt input */

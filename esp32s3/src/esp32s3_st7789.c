@@ -24,8 +24,8 @@
 
 #include <nuttx/config.h>
 
-#include <nuttx/spi/spi.h>
 #include <nuttx/lcd/st7789.h>
+#include <nuttx/spi/spi.h>
 
 #include "esp32s3_gpio.h"
 #include "esp32s3_spi.h"
@@ -36,8 +36,7 @@
 
 static struct lcd_dev_s *g_lcd = NULL;
 
-struct lcd_dev_s *board_graphics_setup(unsigned int devno)
-{
+struct lcd_dev_s *board_graphics_setup(unsigned int devno) {
   struct spi_dev_s *spi;
 
   /* Configure the DC/CS/RST/BL pins as GPIOs */
@@ -55,8 +54,7 @@ struct lcd_dev_s *board_graphics_setup(unsigned int devno)
   /* Configure the SPI bus used by the ST7789 */
 
   spi = esp32s3_spibus_initialize(2);
-  if (!spi)
-  {
+  if (!spi) {
     return NULL;
   }
 
@@ -65,15 +63,10 @@ struct lcd_dev_s *board_graphics_setup(unsigned int devno)
   return g_lcd;
 }
 
-uint8_t esp32s3_spi2_status(struct spi_dev_s *dev, uint32_t devid)
-{
-  return 0;
-}
+uint8_t esp32s3_spi2_status(struct spi_dev_s *dev, uint32_t devid) { return 0; }
 
-int esp32s3_spi2_cmddata(struct spi_dev_s *dev, uint32_t devid, bool cmd)
-{
-  if (devid == SPIDEV_DISPLAY(0))
-  {
+int esp32s3_spi2_cmddata(struct spi_dev_s *dev, uint32_t devid, bool cmd) {
+  if (devid == SPIDEV_DISPLAY(0)) {
     esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_LCD_ST7789_DC_PIN, !cmd);
     return OK;
   }
@@ -81,15 +74,10 @@ int esp32s3_spi2_cmddata(struct spi_dev_s *dev, uint32_t devid, bool cmd)
   return -ENODEV;
 }
 
-int board_lcd_initialize(void)
-{
-  return OK;
-}
+int board_lcd_initialize(void) { return OK; }
 
-FAR struct lcd_dev_s *board_lcd_getdev(int lcddev)
-{
-  if (g_lcd == NULL)
-  {
+FAR struct lcd_dev_s *board_lcd_getdev(int lcddev) {
+  if (g_lcd == NULL) {
     g_lcd = board_graphics_setup(0);
   }
   return g_lcd;

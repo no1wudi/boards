@@ -24,11 +24,11 @@
 
 #include <nuttx/config.h>
 
-#include <stdlib.h>
-#include <debug.h>
 #include <assert.h>
+#include <debug.h>
 #include <nuttx/arch.h>
 #include <nuttx/board.h>
+#include <stdlib.h>
 
 #include "esp32_systemreset.h"
 
@@ -62,12 +62,10 @@
  *
  ****************************************************************************/
 
-int board_reset(int status)
-{
+int board_reset(int status) {
   syslog(LOG_INFO, "reboot status=%d\n", status);
 
-  switch (status)
-  {
+  switch (status) {
   case EXIT_SUCCESS:
     up_shutdown_handler();
     break;

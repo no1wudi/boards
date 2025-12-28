@@ -23,8 +23,8 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
-#include <nuttx/spi/spi.h>
 #include <nuttx/lcd/ssd1680.h>
+#include <nuttx/spi/spi.h>
 #include <stdbool.h>
 
 #include "espressif/esp_gpio.h"
@@ -55,8 +55,8 @@ static bool check_busy(void);
  ****************************************************************************/
 
 const struct ssd1680_priv_s g_lcd_priv = {
-    .set_vcc    = set_vcc,
-    .set_rst    = set_rst,
+    .set_vcc = set_vcc,
+    .set_rst = set_rst,
     .check_busy = check_busy,
 };
 
@@ -77,10 +77,7 @@ const struct ssd1680_priv_s g_lcd_priv = {
  *   Always returns true.
  ****************************************************************************/
 
-static bool set_vcc(bool on)
-{
-  return true;
-}
+static bool set_vcc(bool on) { return true; }
 
 /****************************************************************************
  * Name: set_rst
@@ -95,8 +92,7 @@ static bool set_vcc(bool on)
  *   Always returns true.
  ****************************************************************************/
 
-static bool set_rst(bool on)
-{
+static bool set_rst(bool on) {
   esp_gpiowrite(CONFIG_BOARD_SSD1681_RESET_IO, on);
   return true;
 }
@@ -111,8 +107,7 @@ static bool set_rst(bool on)
  *   Boolean indicating whether the LCD is busy.
  ****************************************************************************/
 
-static bool check_busy(void)
-{
+static bool check_busy(void) {
   return esp_gpioread(CONFIG_BOARD_SSD1681_BUSY_IO);
 }
 
@@ -131,8 +126,7 @@ static bool check_busy(void)
  *
  ****************************************************************************/
 
-struct lcd_dev_s *board_lcd_getdev(void)
-{
+struct lcd_dev_s *board_lcd_getdev(void) {
   /* Configure the reset pin as an output */
 
   esp_configgpio(CONFIG_BOARD_SSD1681_RESET_IO, OUTPUT);
@@ -148,8 +142,7 @@ struct lcd_dev_s *board_lcd_getdev(void)
   esp_gpiowrite(CONFIG_BOARD_SSD1681_RESET_IO, true);
 
   struct spi_dev_s *spi = esp_spibus_initialize(2);
-  if (!spi)
-  {
+  if (!spi) {
     return NULL;
   }
 
@@ -166,10 +159,7 @@ struct lcd_dev_s *board_lcd_getdev(void)
  *   Returns OK if the initialization is successful.
  ****************************************************************************/
 
-int board_lcd_initialize(void)
-{
-  return OK;
-}
+int board_lcd_initialize(void) { return OK; }
 
 /****************************************************************************
  * Name: board_lcd_uninitialize
@@ -181,6 +171,4 @@ int board_lcd_initialize(void)
  *   None.
  ****************************************************************************/
 
-void board_lcd_uninitialize(void)
-{
-}
+void board_lcd_uninitialize(void) {}

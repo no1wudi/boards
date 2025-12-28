@@ -59,12 +59,10 @@
  *
  ****************************************************************************/
 
-int board_reset(int status)
-{
+int board_reset(int status) {
   syslog(LOG_INFO, "reboot status=%d\n", status);
 
-  switch (status)
-  {
+  switch (status) {
   case EXIT_SUCCESS:
     up_shutdown_handler();
     break;

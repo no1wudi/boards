@@ -24,9 +24,9 @@
 
 #include <nuttx/config.h>
 
-#include <sys/types.h>
-#include <errno.h>
 #include <debug.h>
+#include <errno.h>
+#include <sys/types.h>
 
 #include <nuttx/board.h>
 #include <nuttx/timers/pwm.h>
@@ -52,15 +52,13 @@
  *
  ****************************************************************************/
 
-int esp32_pwm_setup(void)
-{
-  int                     ret;
+int esp32_pwm_setup(void) {
+  int ret;
   struct pwm_lowerhalf_s *pwm;
 
 #ifdef CONFIG_ESP32_LEDC_TIM0
   pwm = esp32_ledc_init(0);
-  if (!pwm)
-  {
+  if (!pwm) {
     syslog(LOG_ERR, "ERROR: Failed to get the LEDC PWM 0 lower half\n");
     return -ENODEV;
   }
@@ -68,8 +66,7 @@ int esp32_pwm_setup(void)
   /* Register the PWM driver at "/dev/pwm0" */
 
   ret = pwm_register("/dev/pwm0", pwm);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: pwm_register failed: %d\n", ret);
     return ret;
   }
@@ -77,8 +74,7 @@ int esp32_pwm_setup(void)
 
 #ifdef CONFIG_ESP32_LEDC_TIM1
   pwm = esp32_ledc_init(1);
-  if (!pwm)
-  {
+  if (!pwm) {
     syslog(LOG_ERR, "ERROR: Failed to get the LEDC PWM 1 lower half\n");
     return -ENODEV;
   }
@@ -86,8 +82,7 @@ int esp32_pwm_setup(void)
   /* Register the PWM driver at "/dev/pwm1" */
 
   ret = pwm_register("/dev/pwm1", pwm);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: pwm_register failed: %d\n", ret);
     return ret;
   }
@@ -95,8 +90,7 @@ int esp32_pwm_setup(void)
 
 #ifdef CONFIG_ESP32_LEDC_TIM2
   pwm = esp32_ledc_init(2);
-  if (!pwm)
-  {
+  if (!pwm) {
     syslog(LOG_ERR, "ERROR: Failed to get the LEDC PWM 2 lower half\n");
     return -ENODEV;
   }
@@ -104,8 +98,7 @@ int esp32_pwm_setup(void)
   /* Register the PWM driver at "/dev/pwm2" */
 
   ret = pwm_register("/dev/pwm2", pwm);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: pwm_register failed: %d\n", ret);
     return ret;
   }
@@ -113,8 +106,7 @@ int esp32_pwm_setup(void)
 
 #ifdef CONFIG_ESP32_LEDC_TIM3
   pwm = esp32_ledc_init(3);
-  if (!pwm)
-  {
+  if (!pwm) {
     syslog(LOG_ERR, "ERROR: Failed to get the LEDC PWM 3 lower half\n");
     return -ENODEV;
   }
@@ -122,8 +114,7 @@ int esp32_pwm_setup(void)
   /* Register the PWM driver at "/dev/pwm3" */
 
   ret = pwm_register("/dev/pwm3", pwm);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: pwm_register failed: %d\n", ret);
     return ret;
   }

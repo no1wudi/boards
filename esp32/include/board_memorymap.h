@@ -34,47 +34,47 @@
 /* Kernel ROM */
 
 #define KIROM_START (uintptr_t)__kirom_start
-#define KIROM_SIZE  (uintptr_t)__kirom_size
+#define KIROM_SIZE (uintptr_t)__kirom_size
 #define KDROM_START (uintptr_t)__kdrom_start
-#define KDROM_SIZE  (uintptr_t)__kdrom_size
+#define KDROM_SIZE (uintptr_t)__kdrom_size
 
 /* Kernel RAM */
 
 #define KIRAM_0_START (uintptr_t)__kiram_0_start
-#define KIRAM_0_SIZE  (uintptr_t)__kiram_0_size
-#define KIRAM_0_END   (uintptr_t)__kiram_0_end
+#define KIRAM_0_SIZE (uintptr_t)__kiram_0_size
+#define KIRAM_0_END (uintptr_t)__kiram_0_end
 #define KIRAM_1_START (uintptr_t)__kiram_1_start
-#define KIRAM_1_SIZE  (uintptr_t)__kiram_1_size
-#define KIRAM_1_END   (uintptr_t)__kiram_1_end
+#define KIRAM_1_SIZE (uintptr_t)__kiram_1_size
+#define KIRAM_1_END (uintptr_t)__kiram_1_end
 #define KDRAM_0_START (uintptr_t)__kdram_0_start
-#define KDRAM_0_SIZE  (uintptr_t)__kdram_0_size
-#define KDRAM_0_END   (uintptr_t)__kdram_0_end
+#define KDRAM_0_SIZE (uintptr_t)__kdram_0_size
+#define KDRAM_0_END (uintptr_t)__kdram_0_end
 #define KDRAM_1_START (uintptr_t)__kdram_1_start
-#define KDRAM_1_SIZE  (uintptr_t)__kdram_1_size
-#define KDRAM_1_END   (uintptr_t)__kdram_1_end
+#define KDRAM_1_SIZE (uintptr_t)__kdram_1_size
+#define KDRAM_1_END (uintptr_t)__kdram_1_end
 
 /* Exception vectors */
 
 #define VECTORS_START (uintptr_t)__vectors_start
-#define VECTORS_END   (uintptr_t)__vectors_end
+#define VECTORS_END (uintptr_t)__vectors_end
 
 /* User ROM */
 
 #define UIROM_START (uintptr_t)__uirom_start
-#define UIROM_SIZE  (uintptr_t)__uirom_size
-#define UIROM_END   (uintptr_t)__uirom_end
+#define UIROM_SIZE (uintptr_t)__uirom_size
+#define UIROM_END (uintptr_t)__uirom_end
 #define UDROM_START (uintptr_t)__udrom_start
-#define UDROM_SIZE  (uintptr_t)__udrom_size
-#define UDROM_END   (uintptr_t)__udrom_end
+#define UDROM_SIZE (uintptr_t)__udrom_size
+#define UDROM_END (uintptr_t)__udrom_end
 
 /* User RAM */
 
 #define UIRAM_START (uintptr_t)__uiram_start
-#define UIRAM_SIZE  (uintptr_t)__uiram_size
-#define UIRAM_END   (uintptr_t)__uiram_end
+#define UIRAM_SIZE (uintptr_t)__uiram_size
+#define UIRAM_END (uintptr_t)__uiram_end
 #define UDRAM_START (uintptr_t)__udram_start
-#define UDRAM_SIZE  (uintptr_t)__udram_size
-#define UDRAM_END   (uintptr_t)__udram_end
+#define UDRAM_SIZE (uintptr_t)__udram_size
+#define UDRAM_END (uintptr_t)__udram_end
 
 /****************************************************************************
  * Public Data

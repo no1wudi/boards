@@ -26,10 +26,10 @@
 
 #include <debug.h>
 
-#include <nuttx/board.h>
-#include <nuttx/mm/mm.h>
 #include <arch/board/board.h>
 #include <arch/esp32/memory_layout.h>
+#include <nuttx/board.h>
+#include <nuttx/mm/mm.h>
 
 #include "esp32-devkitc.h"
 
@@ -56,9 +56,7 @@
  *
  ****************************************************************************/
 
-void esp32_board_initialize(void)
-{
-}
+void esp32_board_initialize(void) {}
 
 /****************************************************************************
  * Name: board_late_initialize
@@ -75,8 +73,7 @@ void esp32_board_initialize(void)
  ****************************************************************************/
 
 #ifdef CONFIG_BOARD_LATE_INITIALIZE
-void board_late_initialize(void)
-{
+void board_late_initialize(void) {
   /* Perform board-specific initialization */
 
   esp32_bringup();

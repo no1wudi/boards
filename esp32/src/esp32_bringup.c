@@ -24,16 +24,14 @@
 
 #include <nuttx/config.h>
 
-#include <stdio.h>
+#include <debug.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <syslog.h>
-#include <sys/stat.h>
+#include <stdio.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <syslog.h>
-#include <debug.h>
-#include <stdio.h>
+#include <unistd.h>
 
 #include <arch/board/board.h>
 
@@ -41,13 +39,13 @@
 #if defined(CONFIG_ESP32_EFUSE)
 #include <nuttx/efuse/efuse.h>
 #endif
+#include <nuttx/board.h>
 #include <nuttx/fs/fs.h>
 #include <nuttx/himem/himem.h>
-#include <nuttx/board.h>
-#include <nuttx/sensors/mpu60x0.h>
-#include <nuttx/sensors/bh1750fvi.h>
-#include <nuttx/lcd/lcd_dev.h>
 #include <nuttx/i2c/i2c_master.h>
+#include <nuttx/lcd/lcd_dev.h>
+#include <nuttx/sensors/bh1750fvi.h>
+#include <nuttx/sensors/mpu60x0.h>
 
 #if defined(CONFIG_ESP32_EFUSE)
 #include "esp32_efuse.h"
@@ -176,15 +174,13 @@
  *
  ****************************************************************************/
 
-int esp32_bringup(void)
-{
-  int                 ret;
+int esp32_bringup(void) {
+  int ret;
   struct mpu_config_s mpu;
 
 #ifdef CONFIG_ESP32_AES_ACCELERATOR
   ret = esp32_aes_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to initialize AES: %d\n", ret);
   }
 #endif
@@ -193,8 +189,7 @@ int esp32_bringup(void)
   /* Mount the procfs file system */
 
   ret = nx_mount(NULL, "/proc", "procfs", 0, NULL);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to mount procfs at /proc: %d\n", ret);
   }
 #endif
@@ -203,8 +198,7 @@ int esp32_bringup(void)
   /* Mount the tmpfs file system */
 
   ret = nx_mount(NULL, CONFIG_LIBC_TMPDIR, "tmpfs", 0, NULL);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to mount tmpfs at %s: %d\n",
            CONFIG_LIBC_TMPDIR, ret);
   }
@@ -212,16 +206,14 @@ int esp32_bringup(void)
 
 #ifdef CONFIG_MMCSD
   ret = esp32_mmcsd_initialize(0);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize SD slot: %d\n", ret);
   }
 #endif
 
 #ifdef CONFIG_ESP32_RT_TIMER
   ret = esp32_rt_timer_init();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
   }
 #endif
@@ -230,13 +222,12 @@ int esp32_bringup(void)
   /* Instantiate the ESP32 RTC driver */
 
   ret = esp32_rtc_driverinit();
-  if (ret < 0)
-  {
+  if (ret < 0) {
     syslog(LOG_ERR, "ERROR: Failed to Instantiate the RTC driver: %d\n", ret);
   }
 #endif
 
-  mpu.i2c  = esp32_i2cbus_initialize(0);
+  mpu.i2c = esp32_i2cbus_initialize(0);
   mpu.addr = 0x68;
 
   board_lcd_initialize();

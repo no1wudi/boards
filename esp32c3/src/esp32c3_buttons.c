@@ -36,10 +36,10 @@
 
 /* NuttX */
 
+#include <arch/irq.h>
 #include <nuttx/arch.h>
 #include <nuttx/board.h>
 #include <nuttx/irq.h>
-#include <arch/irq.h>
 
 /* Arch */
 
@@ -71,8 +71,7 @@
  *
  ****************************************************************************/
 
-uint32_t board_button_initialize(void)
-{
+uint32_t board_button_initialize(void) {
   esp_configgpio(BUTTON_BOOT, INPUT_FUNCTION_3 | PULLUP);
   return 1;
 }
@@ -93,31 +92,25 @@ uint32_t board_button_initialize(void)
  *
  ****************************************************************************/
 
-uint32_t board_buttons(void)
-{
+uint32_t board_buttons(void) {
   uint8_t ret = 0;
-  int     i   = 0;
-  int     n   = 0;
+  int i = 0;
+  int n = 0;
 
   bool b0 = esp_gpioread(BUTTON_BOOT);
 
-  for (i = 0; i < 10; i++)
-  {
+  for (i = 0; i < 10; i++) {
     up_mdelay(1); /* TODO */
 
     bool b1 = esp_gpioread(BUTTON_BOOT);
 
-    if (b0 == b1)
-    {
+    if (b0 == b1) {
       n++;
-    }
-    else
-    {
+    } else {
       n = 0;
     }
 
-    if (3 == n)
-    {
+    if (3 == n) {
       break;
     }
 
@@ -128,8 +121,7 @@ uint32_t board_buttons(void)
 
   /* Low value means that the button is pressed */
 
-  if (!b0)
-  {
+  if (!b0) {
     ret = 0x1;
   }
 
@@ -160,15 +152,13 @@ uint32_t board_buttons(void)
  ****************************************************************************/
 
 #ifdef CONFIG_ARCH_IRQBUTTONS
-int board_button_irq(int id, xcpt_t irqhandler, void *arg)
-{
+int board_button_irq(int id, xcpt_t irqhandler, void *arg) {
   int ret;
   DEBUGASSERT(id == 0);
 
   int irq = ESP_PIN2IRQ(BUTTON_BOOT);
 
-  if (NULL != irqhandler)
-  {
+  if (NULL != irqhandler) {
     /* Make sure the interrupt is disabled */
 
     esp_gpioirqdisable(irq);
@@ -176,8 +166,7 @@ int board_button_irq(int id, xcpt_t irqhandler, void *arg)
     gpioinfo("Attach %p\n", irqhandler);
 
     ret = irq_attach(irq, irqhandler, arg);
-    if (ret < 0)
-    {
+    if (ret < 0) {
       syslog(LOG_ERR, "ERROR: irq_attach() failed: %d\n", ret);
       return ret;
     }
@@ -186,9 +175,7 @@ int board_button_irq(int id, xcpt_t irqhandler, void *arg)
 
     gpioinfo("Enabling the interrupt\n");
     esp_gpioirqenable(irq, CHANGE);
-  }
-  else
-  {
+  } else {
     gpioinfo("Disable the interrupt\n");
     esp_gpioirqdisable(irq);
   }
