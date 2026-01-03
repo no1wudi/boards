@@ -5,7 +5,7 @@ using sysbus
 $name?="STM32F746"
 mach create $name
 
-emulation CreateUartPtyTerminal "term" "/tmp/ttyRenode"
+emulation CreateServerSocketTerminal 12345 "term"
 
 machine LoadPlatformDescription @platforms/boards/stm32f7_discovery-bb.repl
 
@@ -13,7 +13,7 @@ connector Connect sysbus.usart1 term
 
 ltdc FramesPerVirtualSecond 100
 
-$bin ?= @nuttx/nuttx
+$bin ?= @build/nuttx
 
 macro reset
 """
