@@ -1,6 +1,8 @@
 /****************************************************************************
  * boards/xtensa/esp32/esp32-devkitc/src/esp32_twai.c
  *
+ * SPDX-License-Identifier: Apache-2.0
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.  The
@@ -24,16 +26,14 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
 #include <errno.h>
+#include <nuttx/debug.h>
 
-#include <arch/board/board.h>
 #include <nuttx/can/can.h>
+#include <arch/board/board.h>
 
-#include "chip.h"
-
-#include "esp32-devkitc.h"
 #include "esp32_twai.h"
+#include "esp32-devkitc.h"
 
 #ifdef CONFIG_CAN
 
@@ -57,7 +57,8 @@
  *
  ****************************************************************************/
 
-int esp32_twai_setup(void) {
+int esp32_twai_setup(void)
+{
 #ifdef CONFIG_ESP32_TWAI0
   struct can_dev_s *twai;
   int ret;
@@ -67,18 +68,20 @@ int esp32_twai_setup(void) {
    * */
 
   twai = esp32_twaiinitialize(TWAI_PORT0);
-  if (twai == NULL) {
-    canerr("ERROR:  Failed to get TWAI0 interface\n");
-    return -ENODEV;
-  }
+  if (twai == NULL)
+    {
+      canerr("ERROR:  Failed to get TWAI0 interface\n");
+      return -ENODEV;
+    }
 
   /* Register the TWAI0 driver at "/dev/can0" */
 
   ret = can_register("/dev/can0", twai);
-  if (ret < 0) {
-    canerr("ERROR: TWAI1 register failed: %d\n", ret);
-    return ret;
-  }
+  if (ret < 0)
+    {
+      canerr("ERROR: TWAI1 register failed: %d\n", ret);
+      return ret;
+    }
 
   return OK;
 #else

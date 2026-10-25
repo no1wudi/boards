@@ -1,6 +1,8 @@
 /****************************************************************************
  * boards/xtensa/esp32/esp32-devkitc/src/esp32_boot.c
  *
+ * SPDX-License-Identifier: Apache-2.0
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.  The
@@ -24,12 +26,12 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
+#include <nuttx/debug.h>
 
-#include <arch/board/board.h>
-#include <arch/esp32/memory_layout.h>
 #include <nuttx/board.h>
 #include <nuttx/mm/mm.h>
+#include <arch/board/board.h>
+#include <arch/esp32/memory_layout.h>
 
 #include "esp32-devkitc.h"
 
@@ -56,7 +58,9 @@
  *
  ****************************************************************************/
 
-void esp32_board_initialize(void) {}
+void esp32_board_initialize(void)
+{
+}
 
 /****************************************************************************
  * Name: board_late_initialize
@@ -73,7 +77,8 @@ void esp32_board_initialize(void) {}
  ****************************************************************************/
 
 #ifdef CONFIG_BOARD_LATE_INITIALIZE
-void board_late_initialize(void) {
+void board_late_initialize(void)
+{
   /* Perform board-specific initialization */
 
   esp32_bringup();

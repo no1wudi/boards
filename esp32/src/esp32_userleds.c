@@ -1,6 +1,8 @@
 /****************************************************************************
  * boards/xtensa/esp32/esp32-devkitc/src/esp32_userleds.c
  *
+ * SPDX-License-Identifier: Apache-2.0
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.  The
@@ -24,15 +26,15 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <nuttx/debug.h>
 
-#include <arch/board/board.h>
 #include <nuttx/board.h>
+#include <arch/board/board.h>
 
+#include "espressif/esp_gpio.h"
 #include "esp32-devkitc.h"
-#include "esp32_gpio.h"
 
 /****************************************************************************
  * Private Data
@@ -40,8 +42,9 @@
 
 /* This array maps an LED number to GPIO pin configuration */
 
-static const uint32_t g_ledcfg[BOARD_NLEDS] = {
-    GPIO_LED1,
+static const uint32_t g_ledcfg[BOARD_NLEDS] =
+{
+  GPIO_LED1,
 };
 
 /****************************************************************************
@@ -52,12 +55,14 @@ static const uint32_t g_ledcfg[BOARD_NLEDS] = {
  * Name: board_userled_initialize
  ****************************************************************************/
 
-uint32_t board_userled_initialize(void) {
+uint32_t board_userled_initialize(void)
+{
   uint8_t i;
 
-  for (i = 0; i < BOARD_NLEDS; i++) {
-    esp32_configgpio(g_ledcfg[i], OUTPUT);
-  }
+  for (i = 0; i < BOARD_NLEDS; i++)
+    {
+      esp_configgpio(g_ledcfg[i], OUTPUT);
+    }
 
   return BOARD_NLEDS;
 }
@@ -66,22 +71,26 @@ uint32_t board_userled_initialize(void) {
  * Name: board_userled
  ****************************************************************************/
 
-void board_userled(int led, bool ledon) {
-  if ((unsigned)led < BOARD_NLEDS) {
-    esp32_gpiowrite(g_ledcfg[led], ledon);
-  }
+void board_userled(int led, bool ledon)
+{
+  if ((unsigned)led < BOARD_NLEDS)
+    {
+      esp_gpiowrite(g_ledcfg[led], ledon);
+    }
 }
 
 /****************************************************************************
  * Name: board_userled_all
  ****************************************************************************/
 
-void board_userled_all(uint32_t ledset) {
+void board_userled_all(uint32_t ledset)
+{
   uint8_t i;
 
   /* Configure LED1-8 GPIOs for output */
 
-  for (i = 0; i < BOARD_NLEDS; i++) {
-    esp32_gpiowrite(g_ledcfg[i], (ledset & (1 << i)) != 0);
-  }
+  for (i = 0; i < BOARD_NLEDS; i++)
+    {
+      esp_gpiowrite(g_ledcfg[i], (ledset & (1 << i)) != 0);
+    }
 }
