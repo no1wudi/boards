@@ -48,13 +48,13 @@ jobs:
           sudo apt-get install -y build-essential kconfig-frontends-nox genromfs
           sudo apt-get install -y python3 python3-pip
 
-          pip3 install esptool
+          pip3 install esptool==5.6.0
 
           mkdir -p tools
-          curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-13.2.0_20240305/xtensa-esp-elf-13.2.0_20240305-x86_64-linux-gnu.tar.gz | tar zxf -
+          curl -L https://github.com/espressif/crosstool-NG/releases/download/esp-16.1.0_20260609/xtensa-esp-elf-16.1.0_20260609-x86_64-linux-gnu.tar.gz | tar zxf -
           echo "$PWD/xtensa-esp-elf/bin" >> $GITHUB_PATH
-          curl -L https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v13.2.0-2/xpack-riscv-none-elf-gcc-13.2.0-2-linux-x64.tar.gz | tar zxf -
-          echo "$PWD/xpack-riscv-none-elf-gcc-13.2.0-2/bin" >> $GITHUB_PATH
+          curl -L https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v15.2.0-1/xpack-riscv-none-elf-gcc-15.2.0-1-linux-x64.tar.gz | tar zxf -
+          echo "$PWD/xpack-riscv-none-elf-gcc-15.2.0-1/bin" >> $GITHUB_PATH
 
       - name: Build
         run: |
