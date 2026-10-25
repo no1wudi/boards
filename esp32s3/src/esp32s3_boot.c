@@ -1,10 +1,10 @@
 /****************************************************************************
- * boards/xtensa/esp32s3/esp32s3-eye/src/esp32s3_boot.c
+ * boards/esp32s3/src/esp32s3_boot.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.  The
- * ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
  * License.  You may obtain a copy of the License at
  *
@@ -24,19 +24,12 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
+#include <nuttx/debug.h>
 
-#include <arch/board/board.h>
 #include <nuttx/board.h>
-#include <nuttx/mm/mm.h>
+#include <arch/board/board.h>
 
-/****************************************************************************
- * Pre-processor Definitions
- ****************************************************************************/
-
-/****************************************************************************
- * Private Functions
- ****************************************************************************/
+#include "esp32s3.h"
 
 /****************************************************************************
  * Public Functions
@@ -53,7 +46,8 @@
  *
  ****************************************************************************/
 
-void esp32s3_board_initialize(void) {}
+void esp32s3_board_initialize(void) {
+}
 
 /****************************************************************************
  * Name: board_late_initialize

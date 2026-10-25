@@ -1,10 +1,10 @@
 /****************************************************************************
- * boards/xtensa/esp32s3/esp32s3-eye/include/board.h
+ * boards/esp32s3/include/board.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.  The
- * ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
  * License.  You may obtain a copy of the License at
  *
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_XTENSA_ESP32S3_ESP32S3_EYE_INCLUDE_BOARD_H
-#define __BOARDS_XTENSA_ESP32S3_ESP32S3_EYE_INCLUDE_BOARD_H
+#ifndef __BOARDS_ESP32S3_INCLUDE_BOARD_H
+#define __BOARDS_ESP32S3_INCLUDE_BOARD_H
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -27,7 +27,7 @@
 
 /* Clocking *****************************************************************/
 
-/* The ESP32-S3-EYE board is fitted with a 40MHz crystal */
+/* The board is fitted with a 40MHz crystal */
 
 #define BOARD_XTAL_FREQUENCY 40000000
 
@@ -37,10 +37,16 @@
 #define BOARD_CLOCK_FREQUENCY 80000000
 #endif
 
-/* LED definitions **********************************************************/
+/* Product-specific GPIOs ****************************************************/
 
-/* Define how many LEDs this board has (needed by userleds) */
+/* Buzzer, ST7789 LCD control pins and touch panel pins are configurable via
+ * the BOARD_ESP32S3_* options in boards/esp32s3/Kconfig and are consumed
+ * directly from CONFIG_BOARD_ESP32S3_* by the code in src/.
+ *
+ * Defaults:
+ *   Buzzer          GPIO33
+ *   LCD DC/RST/BL   GPIO4 / GPIO8 / GPIO15
+ *   Touch RST/INT   GPIO13 / GPIO14
+ */
 
-#define BOARD_NLEDS 1
-
-#endif /* __BOARDS_XTENSA_ESP32S3_ESP32S3_EYE_INCLUDE_BOARD_H */
+#endif /* __BOARDS_ESP32S3_INCLUDE_BOARD_H */

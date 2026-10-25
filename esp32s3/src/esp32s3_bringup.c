@@ -1,10 +1,10 @@
 /****************************************************************************
- * boards/xtensa/esp32s3/esp32s3-eye/src/esp32s3_bringup.c
+ * boards/esp32s3/src/esp32s3_bringup.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.  The
- * ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
  * License.  You may obtain a copy of the License at
  *
@@ -25,36 +25,18 @@
 #include <nuttx/config.h>
 
 #include <debug.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <syslog.h>
-#include <unistd.h>
 
 #include <nuttx/fs/fs.h>
-#include <nuttx/i2c/i2c_master.h>
-#include <nuttx/lcd/lcd_dev.h>
-#include <nuttx/video/fb.h>
+#include <arch/board/board.h>
 
-#include "esp32s3_gpio.h"
-#include "esp32s3_i2c.h"
+#include "espressif/esp_gpio.h"
 
-#ifdef CONFIG_ESP32S3_TIMER
-#include "esp32s3_board_tim.h"
+#ifdef CONFIG_LCD_DEV
+#  include <nuttx/lcd/lcd_dev.h>
 #endif
 
-#ifdef CONFIG_ESP32S3_RT_TIMER
-#include "esp32s3_rt_timer.h"
-#endif
-
-#ifdef CONFIG_WATCHDOG
-#include "esp32s3_board_wdt.h"
-#endif
-
-#ifdef CONFIG_INPUT_BUTTONS
-#include <nuttx/input/buttons.h>
-#endif
+#include "esp32s3.h"
 
 /****************************************************************************
  * Public Functions
@@ -69,21 +51,22 @@
  *   CONFIG_BOARD_LATE_INITIALIZE=y :
  *     Called from board_late_initialize().
  *
- *   CONFIG_BOARD_LATE_INITIALIZE=n && CONFIG_BOARDCTL=y :
- *     Called from the NSH library
- *
  ****************************************************************************/
 
 int esp32s3_bringup(void) {
-  int ret;
+  int ret = OK;
 
 #ifdef CONFIG_BOARD_ESP32S3_BUZZER
-  esp32s3_configgpio(CONFIG_BOARD_ESP32S3_BUZZER_PIN, OUTPUT | PULLDOWN);
-  esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_BUZZER_PIN, false);
+  /* Keep the buzzer silent */
+
+  esp_configgpio(CONFIG_BOARD_ESP32S3_BUZZER_PIN, OUTPUT | PULLDOWN);
+  esp_gpiowrite(CONFIG_BOARD_ESP32S3_BUZZER_PIN, false);
 #endif
 
-  esp32s3_configgpio(CONFIG_BOARD_ESP32S3_TP_RST_PIN, OUTPUT | PULLUP);
-  esp32s3_gpiowrite(CONFIG_BOARD_ESP32S3_TP_RST_PIN, true);
+  /* Release the touch panel controller from reset */
+
+  esp_configgpio(CONFIG_BOARD_ESP32S3_TP_RST_PIN, OUTPUT | PULLUP);
+  esp_gpiowrite(CONFIG_BOARD_ESP32S3_TP_RST_PIN, true);
 
 #ifdef CONFIG_FS_PROCFS
   /* Mount the procfs file system */
@@ -104,63 +87,22 @@ int esp32s3_bringup(void) {
   }
 #endif
 
-#ifdef CONFIG_ESP32S3_TIMER
-  /* Configure general purpose timers */
+#ifdef CONFIG_LCD
+  /* Initialize the ST7789 LCD attached to SPI2 */
 
-  ret = board_tim_init();
+  ret = board_lcd_initialize();
   if (ret < 0) {
-    syslog(LOG_ERR, "Failed to initialize timers: %d\n", ret);
+    syslog(LOG_ERR, "ERROR: Failed to initialize LCD: %d\n", ret);
   }
-#endif
-
-#ifdef CONFIG_ESP32S3_RT_TIMER
-  ret = esp32s3_rt_timer_init();
-  if (ret < 0) {
-    syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
-  }
-#endif
-
-#ifdef CONFIG_WATCHDOG
-  /* Configure watchdog timer */
-
-  ret = board_wdt_init();
-  if (ret < 0) {
-    syslog(LOG_ERR, "Failed to initialize watchdog timer: %d\n", ret);
-  }
-#endif
-
-#ifdef CONFIG_INPUT_BUTTONS
-  /* Register the BUTTON driver */
-
-  ret = btn_lower_initialize("/dev/buttons");
-  if (ret < 0) {
-    syslog(LOG_ERR, "Failed to initialize button driver: %d\n", ret);
-  }
-#endif
-
-#ifdef CONFIG_ESP32S3_SPIFLASH
-  ret = board_spiflash_init();
-  if (ret) {
-    syslog(LOG_ERR, "ERROR: Failed to initialize SPI Flash\n");
-  }
-#endif
-
-#ifdef CONFIG_VIDEO_FB
-  fb_register(0, 0);
 #endif
 
 #ifdef CONFIG_LCD_DEV
-  lcddev_register(0);
-#endif
+  /* Register the LCD character driver (/dev/lcd0) */
 
-#ifdef CONFIG_ESP32S3_I2C0
-  /* Initialize I2C0 and register it to /dev/i2c0 */
-  struct i2c_master_s *master = esp32s3_i2cbus_initialize(0);
-#ifdef CONFIG_SYSTEM_I2CTOOL
-  if (master) {
-    i2c_register(master, 0);
+  ret = lcddev_register(0);
+  if (ret < 0) {
+    syslog(LOG_ERR, "ERROR: lcddev_register() failed: %d\n", ret);
   }
-#endif
 #endif
 
   UNUSED(ret);
