@@ -1,5 +1,7 @@
 /****************************************************************************
- * boards/risc-v/esp32c3/esp32c3-generic/src/esp32c3_reset.c
+ * boards/esp32c3/src/esp32c3_reset.c
+ *
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -25,7 +27,7 @@
 #include <nuttx/config.h>
 
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <stdlib.h>
 
 #include <nuttx/arch.h>
@@ -59,17 +61,19 @@
  *
  ****************************************************************************/
 
-int board_reset(int status) {
+int board_reset(int status)
+{
   syslog(LOG_INFO, "reboot status=%d\n", status);
 
-  switch (status) {
-  case EXIT_SUCCESS:
-    up_shutdown_handler();
-    break;
-  case CONFIG_BOARD_ASSERT_RESET_VALUE:
-  default:
-    break;
-  }
+  switch (status)
+    {
+      case EXIT_SUCCESS:
+        up_shutdown_handler();
+        break;
+      case CONFIG_BOARD_ASSERT_RESET_VALUE:
+      default:
+        break;
+    }
 
   up_systemreset();
 

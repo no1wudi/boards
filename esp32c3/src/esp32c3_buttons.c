@@ -1,5 +1,7 @@
 /****************************************************************************
- * boards/risc-v/esp32c3/esp32c3-generic/src/esp32c3_buttons.c
+ * boards/esp32c3/src/esp32c3_buttons.c
+ *
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -29,17 +31,17 @@
 /* Libc */
 
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 
 /* NuttX */
 
-#include <arch/irq.h>
 #include <nuttx/arch.h>
 #include <nuttx/board.h>
 #include <nuttx/irq.h>
+#include <arch/irq.h>
 
 /* Arch */
 
@@ -71,8 +73,9 @@
  *
  ****************************************************************************/
 
-uint32_t board_button_initialize(void) {
-  esp_configgpio(BUTTON_BOOT, INPUT_FUNCTION_3 | PULLUP);
+uint32_t board_button_initialize(void)
+{
+  esp_configgpio(BUTTON_BOOT, INPUT_FUNCTION_2 | PULLUP | CHANGE);
   return 1;
 }
 
@@ -92,38 +95,45 @@ uint32_t board_button_initialize(void) {
  *
  ****************************************************************************/
 
-uint32_t board_buttons(void) {
+uint32_t board_buttons(void)
+{
   uint8_t ret = 0;
   int i = 0;
   int n = 0;
 
   bool b0 = esp_gpioread(BUTTON_BOOT);
 
-  for (i = 0; i < 10; i++) {
-    up_mdelay(1); /* TODO */
+  for (i = 0; i < 10; i++)
+    {
+      up_mdelay(1); /* TODO */
 
-    bool b1 = esp_gpioread(BUTTON_BOOT);
+      bool b1 = esp_gpioread(BUTTON_BOOT);
 
-    if (b0 == b1) {
-      n++;
-    } else {
-      n = 0;
+      if (b0 == b1)
+        {
+          n++;
+        }
+      else
+        {
+          n = 0;
+        }
+
+      if (3 == n)
+        {
+          break;
+        }
+
+      b0 = b1;
     }
-
-    if (3 == n) {
-      break;
-    }
-
-    b0 = b1;
-  }
 
   iinfo("b=%d n=%d\n", b0, n);
 
   /* Low value means that the button is pressed */
 
-  if (!b0) {
-    ret = 0x1;
-  }
+  if (!b0)
+    {
+      ret = 0x1;
+    }
 
   return ret;
 }
@@ -152,34 +162,8 @@ uint32_t board_buttons(void) {
  ****************************************************************************/
 
 #ifdef CONFIG_ARCH_IRQBUTTONS
-int board_button_irq(int id, xcpt_t irqhandler, void *arg) {
-  int ret;
-  DEBUGASSERT(id == 0);
-
-  int irq = ESP_PIN2IRQ(BUTTON_BOOT);
-
-  if (NULL != irqhandler) {
-    /* Make sure the interrupt is disabled */
-
-    esp_gpioirqdisable(irq);
-
-    gpioinfo("Attach %p\n", irqhandler);
-
-    ret = irq_attach(irq, irqhandler, arg);
-    if (ret < 0) {
-      syslog(LOG_ERR, "ERROR: irq_attach() failed: %d\n", ret);
-      return ret;
-    }
-
-    /* Configure the interrupt for rising and falling edges */
-
-    gpioinfo("Enabling the interrupt\n");
-    esp_gpioirqenable(irq, CHANGE);
-  } else {
-    gpioinfo("Disable the interrupt\n");
-    esp_gpioirqdisable(irq);
-  }
-
-  return OK;
+int board_button_irq(int id, xcpt_t irqhandler, void *arg)
+{
+  return esp_gpio_irq(BUTTON_BOOT, irqhandler, arg);
 }
 #endif

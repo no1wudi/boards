@@ -19,3 +19,33 @@ config BOARD_SSD1681_BUSY_IO
 
 
 endif # BOARD_LCD_SSD1681
+
+#
+# SPI Flash user-storage file system selection.
+#
+# The chip-level ESPRESSIF_SPIFLASH option only brings up the MTD partition;
+# which file system gets mounted on it is a board-level decision (same as
+# boards/risc-v/esp32p4/common). This board uses SPIFFS.
+#
+
+config ESPRESSIF_SPIFLASH_AUTO_BRINGUP
+    bool "Automatic mount of SPI Flash MTD"
+    default y
+    depends on ESPRESSIF_MTD
+
+choice ESPRESSIF_SPIFLASH_FS
+    prompt "File system to mount on SPI Flash MTD"
+    default ESPRESSIF_SPIFLASH_SMARTFS
+    depends on ESPRESSIF_SPIFLASH_AUTO_BRINGUP
+    optional
+
+config ESPRESSIF_SPIFLASH_SPIFFS
+    bool "SPIFFS"
+    select FS_SPIFFS
+
+endchoice # ESPRESSIF_SPIFLASH_FS
+
+config ESPRESSIF_SPIFLASH_FS_MOUNT_PT
+    string "File-system Mount Point"
+    depends on ESPRESSIF_SPIFLASH_SPIFFS
+    default "/data"

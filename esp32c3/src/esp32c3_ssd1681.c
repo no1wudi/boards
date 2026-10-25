@@ -23,9 +23,11 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
+#include <nuttx/board.h>
 #include <nuttx/lcd/ssd1680.h>
 #include <nuttx/spi/spi.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "espressif/esp_gpio.h"
 #include "espressif/esp_spi.h"
@@ -121,12 +123,16 @@ static bool check_busy(void) {
  * Description:
  *   Get the LCD device structure.
  *
+ * Input Parameters:
+ *   display - Display number (ignored, this board has a single display).
+ *
  * Returned Value:
  *   Pointer to the LCD device structure.
  *
  ****************************************************************************/
 
-struct lcd_dev_s *board_lcd_getdev(void) {
+struct lcd_dev_s *board_lcd_getdev(int display)
+{
   /* Configure the reset pin as an output */
 
   esp_configgpio(CONFIG_BOARD_SSD1681_RESET_IO, OUTPUT);

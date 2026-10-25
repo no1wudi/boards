@@ -1,5 +1,7 @@
 /****************************************************************************
- * boards/risc-v/esp32c3/esp32c3-generic/src/esp32c3_boot.c
+ * boards/esp32c3/src/esp32c3_boot.c
+ *
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -24,7 +26,7 @@
 
 #include <nuttx/config.h>
 
-#include "riscv_internal.h"
+#include "esp32c3-generic.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -55,7 +57,9 @@
  *
  ****************************************************************************/
 
-void esp_board_initialize(void) {}
+void esp_board_initialize(void)
+{
+}
 
 /****************************************************************************
  * Name: board_late_initialize
@@ -78,7 +82,8 @@ void esp_board_initialize(void) {}
  ****************************************************************************/
 
 #ifdef CONFIG_BOARD_LATE_INITIALIZE
-void board_late_initialize(void) {
+void board_late_initialize(void)
+{
   /* Perform board-specific initialization */
 
   esp_bringup();
